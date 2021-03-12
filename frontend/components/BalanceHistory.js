@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import CustomerSearch from "./CustomerHeader";
-import CustomerDialog from "./CustomerDialog";
+import BalanceNewRecord from "./BalanceNewRecord";
 import PaymentsTable from "./PaymentsTable";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import {types} from "../redux/constants/action-types";
 import AddIcon from "@material-ui/icons/Add";
 
 
-export default function BalanceHistory() {
-    //const customerState = useSelector((state) => state.customer);
+export default function BalanceHistory(props) {
     const details = useSelector((state) => state.customerPayments);
     const [filterText, setfilterText] = useState("");
+    const [newModal,setnewModal]=useState(false);
     const dispatch = useDispatch();
       
-    const addNew=()=>{
-      //dispatch({type:types.CUSTOMER_MODAL_OPEN, payload:{loading:false}})
+    console.log(details.customerInfo);
+    const ChangeNewModal=(val)=>{
+      setnewModal(val);
+    }
+
+    const CloseNewModal=(val)=>{
+      setnewModal(false);
     }
   
     const textChanged = (e) => {
@@ -28,13 +33,13 @@ export default function BalanceHistory() {
           <div>
             <CustomerSearch 
             textChanged={textChanged} 
-            buttonClick={addNew} 
+            buttonClick={(e)=>{ChangeNewModal(true)}} 
             textLabel={"Geçmişte Ara"}
             buttonIcon={<AddIcon />}
             buttonTooltip={"Yeni İşlem"}
             />
-            <PaymentsTable filterText={filterText} tableData={details.paymentInfo} />
-            {/* <CustomerDialog open={customerState.openModal} loading={customerState.customerFormLoading}></CustomerDialog> */}
+            <PaymentsTable filterText={filterText} tableData={props.type==1 ? details.paymentInfo : details.collectionInfo} />
+            <BalanceNewRecord open={newModal} title={props.type==1 ? "Yeni Tahsilat" : " Yeni Borç"} customerId={details.customerInfo._id} Close={CloseNewModal}/>
           </div>
     );
   }

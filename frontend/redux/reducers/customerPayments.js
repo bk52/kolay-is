@@ -4,6 +4,7 @@ import Toast from "../../components/Snackbar";
 var initialState = {
   customerInfo: {},
   paymentInfo: {},
+  collectionInfo:{},
   isLoading: true,
 };
 
@@ -11,10 +12,16 @@ export default function (state = initialState, action) {
   switch (action.type) {
     case types.CUSTOMER_PAYMENTS_GET_RESP:
     {
+      let _income, _expense=[];
+      if(action.payload && action.payload.customerBalance){
+        _income=action.payload.customerBalance.filter((item)=> {return  item.paymentType==1});
+        _expense=action.payload.customerBalance.filter((item)=> {return  item.paymentType==2});
+      }
       return Object.assign({}, state, {
         isLoading: false,
         customerInfo: action.payload.customerInfo,
-        paymentInfo: action.payload.customerBalance,
+        paymentInfo: _income,
+        collectionInfo:_expense,
       });
     }
     case types.CUSTOMER_PAYMENTS_API_ERROR: {

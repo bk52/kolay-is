@@ -83,7 +83,7 @@ export default function AccountBalance(props) {
         <Grid item xs={12} md={6}>
           <Paper className={classes.paper}>
             <Typography variant="h5" gutterBottom>
-              Ödemeler
+              Borçlar
             </Typography>
             <CustomPieChart
               width={500}

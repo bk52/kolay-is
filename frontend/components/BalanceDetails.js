@@ -28,13 +28,13 @@ const tabList = [
     index: 1,
     title: "TAHSİLATLAR",
     icon: <ArrowDownwardIcon />,
-    component: <BalanceHistory />,
+    component: <BalanceHistory type={1}/>,
   },
   {
     index: 2,
-    title: "ÖDEMELER",
+    title: "BORÇLAR",
     icon: <ArrowUpwardIcon />,
-    component: <div>ÖDEMELER</div>,
+    component: <BalanceHistory type={2}/>,
   },
 ];
 

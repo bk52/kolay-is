@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "web": "webpack --mode development && webpack serve",
-    "server":"nodemon index.js",
+    "server": "nodemon index.js",
     "build": "webpack --mode production",
     "start": "node index.js"
   },
@@ -13,6 +13,7 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "@unicef/material-ui-currency-textfield": "^0.8.6",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
