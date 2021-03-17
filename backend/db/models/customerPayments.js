@@ -79,6 +79,11 @@ customerPaymentSchema.statics.getPaymentById = function (_id) {
               $match: {"paymentHistory.isDeleted": false }
             },
             {
+              $set: {
+                "paymentHistory.payment":{"$toString" : "$paymentHistory.payment"},
+              }
+            },
+            {
               $replaceRoot: { newRoot: "$paymentHistory" }
             }
            ]
@@ -86,7 +91,10 @@ customerPaymentSchema.statics.getPaymentById = function (_id) {
        },
        {
          $set:{
-           "info.activeBalance":{$subtract:[ { $first: "$info.initialBalance" },{ $ifNull: [{ $first: "$totalSubPayments.total" }, 0 ] }]}
+           "info.activeBalance":{"$toString":{$subtract:[ { $first: "$info.initialBalance" },
+           { $ifNull: [{ $first: "$totalSubPayments.total" }, 0 ] }]}},
+           "info.initialBalance":{"$toString":{$first:"$info.initialBalance"}},
+           "totalSubPayments.total":{"$toString":{$first:"$totalSubPayments.total"}}
          }
        }
       ])

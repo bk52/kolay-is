@@ -9,6 +9,10 @@ import { api } from "../redux/actions/apiRoot";
 
 let prevSearchText = "";
 
+function GetCustomers(sourceURL, searchText){
+ return api.post(sourceURL, { account: searchText })
+}
+
 export default function AutoBox({sourceURL, selectedChanged}) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState([]);
@@ -23,16 +27,26 @@ export default function AutoBox({sourceURL, selectedChanged}) {
             else {
               prevSearchText = searchText;
               setLoading(true);
-              api
-                .post(sourceURL, { account: searchText })
+              // api
+              //   .post(sourceURL, { account: searchText })
+                 GetCustomers(sourceURL, searchText)
                 .then((response) => { 
                     if(response.data && response.data.result)
                         setOptions(response.data.result);
                  setLoading(false);
                 })
                 .catch((error) => {
-                  setoptionText("API Error");
-                  setLoading(false);
+
+                  GetCustomers(sourceURL, searchText)
+                  .then((response) => { 
+                      if(response.data && response.data.result)
+                          setOptions(response.data.result);
+                   setLoading(false);
+                  }).catch((err)=>{
+                    setoptionText("API Error");
+                    setLoading(false);
+                  })
+                  
                 });
             }      
         }

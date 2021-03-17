@@ -12,10 +12,14 @@ import dateFormat from "../common/formatDate";
 //   return <Rating name="read-only" value={intValue} readOnly />;
 // }
 
-export default function PaymentsTable({ filterText, tableData }) {
+export default function PaymentsTable({ filterText, tableData, detailsClick }) {
   const tableInstance = useRef(null);
   const confirm = useConfirm();
   const dispatch = useDispatch();
+
+  // const showDetails=()=>{
+
+  // }
 
   const EditCustomer = (value) => {
     // dispatch({type:types.CUSTOMER_MODAL_OPEN, payload:{loading:true}})
@@ -78,7 +82,7 @@ export default function PaymentsTable({ filterText, tableData }) {
         Cell: (props) => {
           return (
             <div style={{ display: "inline-flex" }}>
-              <IconButton size="small" aria-label="edit" onClick={(e)=>{e.stopPropagation();}}><ArrowForwardIosIcon/></IconButton>
+              <IconButton size="small" aria-label="edit" onClick={(e)=>{e.stopPropagation();detailsClick(props.value)}}><ArrowForwardIosIcon/></IconButton>
             </div>
           );
         },
@@ -96,15 +100,3 @@ export default function PaymentsTable({ filterText, tableData }) {
   );
 }
 
-// filter row
-// table
-// title
-// description
-// initialpayment
-// payment done
-// remaning payment
-// son ödeme tarihi
-// created date
-//
-//
-//

@@ -10,7 +10,7 @@ router
   })
   .get(async function (req, res) {
     let { userCompanyId } = req.user;
-    let { customerId } = req.query;
+    let { customerId, paymentId } = req.query;
     if (customerId) {
       try {
         let customerInfo = await customers.getCustomer(customerId);
@@ -19,7 +19,17 @@ router
       } catch (e) {
         res.status(500).json({ message: "Internal Server Error" });
       }
-    } else {
+    } 
+    else if(paymentId){
+      try{
+        let paymentInfo=await customerPayments.getPaymentById(paymentId);
+        res.status(200).json({paymentInfo});
+      }
+      catch(e){
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+    }
+    else {
       res.status(400).json({ message: "Bad Request" });
     }
   });
