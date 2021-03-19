@@ -10,6 +10,8 @@ import Fab from "@material-ui/core/Fab";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { url } from "../redux/constants/action-url";
 
+import BalancePaymentDetails from "../components/BalancePaymentDetails";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -58,6 +60,7 @@ export default function AccountBalance(props) {
   }
    
   return (
+    // <BalancePaymentDetails open={true} /> 
     <div className={classes.root}>
      { 
         details.showDetails ?  <BalanceDetails customerId={details.customerId} GoAccountBalance={GoAccountBalance}></BalanceDetails>

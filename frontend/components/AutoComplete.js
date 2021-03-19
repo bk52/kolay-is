@@ -5,13 +5,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Rating from "@material-ui/lab/Rating";
 import Grid from "@material-ui/core/Grid";
-import { api } from "../redux/actions/apiRoot";
+import {FindCustomers} from "../redux/actions/customersApi";
 
 let prevSearchText = "";
-
-function GetCustomers(sourceURL, searchText){
- return api.post(sourceURL, { account: searchText })
-}
 
 export default function AutoBox({sourceURL, selectedChanged}) {
     const [loading, setLoading] = React.useState(false);
@@ -27,27 +23,17 @@ export default function AutoBox({sourceURL, selectedChanged}) {
             else {
               prevSearchText = searchText;
               setLoading(true);
-              // api
-              //   .post(sourceURL, { account: searchText })
-                 GetCustomers(sourceURL, searchText)
-                .then((response) => { 
-                    if(response.data && response.data.result)
-                        setOptions(response.data.result);
-                 setLoading(false);
-                })
-                .catch((error) => {
 
-                  GetCustomers(sourceURL, searchText)
-                  .then((response) => { 
-                      if(response.data && response.data.result)
-                          setOptions(response.data.result);
-                   setLoading(false);
-                  }).catch((err)=>{
-                    setoptionText("API Error");
-                    setLoading(false);
-                  })
-                  
-                });
+              FindCustomers(searchText)
+              .then((response)=>{
+                if(response.data && response.data.result)
+                  setOptions(response.data.result);
+                setLoading(false);
+              })
+              .catch((err)=>{
+                  setoptionText("API Error");
+                  setLoading(false);
+              })
             }      
         }
         else if(searchText==""){

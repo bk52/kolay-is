@@ -9,11 +9,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useConfirm } from 'material-ui-confirm';
 import {types} from "../redux/constants/action-types";
 
-
-  function RatingCell({ value}) {
+function RatingCell({ value}) {
     let intValue=Math.floor(value);
     return <Rating name="read-only" value={intValue} readOnly />;
-  }
+}
 
 export default function CustomerTable({filterText, tableData}) {
     const tableInstance = useRef(null);

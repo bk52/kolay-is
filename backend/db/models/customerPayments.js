@@ -89,13 +89,16 @@ customerPaymentSchema.statics.getPaymentById = function (_id) {
            ]
          }
        },
+       { $unwind: '$info' },
        {
-         $set:{
-           "info.activeBalance":{"$toString":{$subtract:[ { $first: "$info.initialBalance" },
-           { $ifNull: [{ $first: "$totalSubPayments.total" }, 0 ] }]}},
-           "info.initialBalance":{"$toString":{$first:"$info.initialBalance"}},
-           "totalSubPayments.total":{"$toString":{$first:"$totalSubPayments.total"}}
-         }
+         $set: {
+          "info.activeBalance":{"$toString":{$subtract:["$info.initialBalance", { $ifNull: [{$first:"$totalSubPayments.total"}, 0 ] }]}},
+          "info.totalSubPayments":{"$toString":{ $ifNull: [{$first:"$totalSubPayments.total"},0]}},
+          "info.initialBalance":{"$toString":"$info.initialBalance"}
+        }
+       },
+       {
+         $unset:"totalSubPayments"
        }
       ])
       .then((queryRes)=>{resolve(queryRes)})

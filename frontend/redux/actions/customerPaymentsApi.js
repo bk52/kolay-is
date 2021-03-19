@@ -10,6 +10,26 @@ function GetPayments(payload){
     .catch((error) => {ErrorHandler(error);});
 }
 
+function GetPaymentDetails(paymentId){
+    // return new Promise((resolve,reject)=>{
+    //     api.post(url.SEARCH, { account: searchText })
+    //     .then((response)=>{
+    //       resolve(response)
+    //     })
+    //     .catch((error) => {
+    //       if(retry){
+    //         ErrorHandler(error); reject(error);
+    //       }
+    //       else{
+    //         FindCustomers(searchText,true)
+    //         .then((response)=>{resolve(response)})
+    //         .catch((error)=>{ErrorHandler(error); reject(error);})
+    //       }
+    //     })
+    //  })
+}
+
 export {
-    GetPayments
+    GetPayments,
+    GetPaymentDetails
   }
