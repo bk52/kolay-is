@@ -249,15 +249,20 @@ customerPaymentSchema.statics.setsubPayment = function (subPayment) {
   }
 };
 
-customerPaymentSchema.statics.deletePayment = function (payment) {
-  if (payment._id && payment._id !== "") {
+customerPaymentSchema.statics.deletePayment = function (paymentId) {
+  if (paymentId && paymentId !== "") {
     return this.findOneAndUpdate(
-      { _id: payment._id },
+      { _id: paymentId },
       { isDeleted: true, deletedDate: new Date() }
     ).lean();
-  } else if (payment.subPaymentId && payment.subPaymentId !== "") {
+  } 
+};
+
+
+customerPaymentSchema.statics.deleteSubPayment = function (paymentId) {
+if (paymentId && paymentId !== "") {
     return this.findOneAndUpdate(
-      { "paymentHistory._id": payment.subPaymentId },
+      { "paymentHistory._id": paymentId },
       {
         "paymentHistory.$.isDeleted": true,
         "paymentHistory.$.deletedDate": new Date(),
@@ -265,6 +270,7 @@ customerPaymentSchema.statics.deletePayment = function (payment) {
     ).lean();
   }
 };
+
 
 const customerPaymentModel = mongoose.model(
   "customers_payments",

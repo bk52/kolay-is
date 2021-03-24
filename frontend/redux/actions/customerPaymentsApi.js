@@ -10,26 +10,54 @@ function GetPayments(payload){
     .catch((error) => {ErrorHandler(error);});
 }
 
-function GetPaymentDetails(paymentId){
-    // return new Promise((resolve,reject)=>{
-    //     api.post(url.SEARCH, { account: searchText })
-    //     .then((response)=>{
-    //       resolve(response)
-    //     })
-    //     .catch((error) => {
-    //       if(retry){
-    //         ErrorHandler(error); reject(error);
-    //       }
-    //       else{
-    //         FindCustomers(searchText,true)
-    //         .then((response)=>{resolve(response)})
-    //         .catch((error)=>{ErrorHandler(error); reject(error);})
-    //       }
-    //     })
-    //  })
+function GetPaymentDetails(paymentId, retry=false){
+    return new Promise((resolve,reject)=>{
+        api.get(url.PAYMENTS,{params:{
+            paymentId:paymentId
+        }})
+        .then((response)=>{
+          resolve(response)
+        })
+        .catch((error) => {
+          if(retry){
+            ErrorHandler(error); reject(error);
+          }
+          else{
+            GetPaymentDetails(paymentId,true)
+            .then((response)=>{resolve(response)})
+            .catch((error)=>{ErrorHandler(error); reject(error);})
+          }
+        })
+     })
+}
+
+function DeleteSubPayment(subPaymentId, retry=false){
+  return new Promise((resolve,reject)=>{
+    api.delete(url.PAYMENTS,{params:{
+      subPaymentId:subPaymentId
+    }})
+    .then((response)=>{
+      resolve(response)
+    })
+    .catch((error) => {
+      if(retry){
+        ErrorHandler(error); reject(error);
+      }
+      else{
+        DeleteSubPayment(subPaymentId,true)
+        .then((response)=>{resolve(response)})
+        .catch((error)=>{ErrorHandler(error); reject(error);})
+      }
+    })
+ })
+}
+
+function AddSubPayment(paymentInfo, retry=false){
+  
 }
 
 export {
     GetPayments,
-    GetPaymentDetails
+    GetPaymentDetails,
+    DeleteSubPayment
   }

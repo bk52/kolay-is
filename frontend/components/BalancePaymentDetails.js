@@ -17,14 +17,17 @@ import CurrencyTextField from "@unicef/material-ui-currency-textfield";
 import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MonetizationOnOutlinedIcon from "@material-ui/icons/MonetizationOnOutlined";
 import formatDate from "../common/formatDate";
-import { useConfirm } from 'material-ui-confirm';
+import { useConfirm } from "material-ui-confirm";
+import { GetPaymentDetails, DeleteSubPayment } from "../redux/actions/customerPaymentsApi";
+import Toast from "./Snackbar";
+
+import ListSubheader from "@material-ui/core/ListSubheader";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,14 +38,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PaymentInfo({info}) {
+function PaymentInfo({ info }) {
   const classes = useStyles();
-  console.log(info);
+  function setter(value) {
+    return value ? value : "";
+  }
+
   return (
     <div>
       <Grid container className={classes.root} spacing={2}>
         <Grid item xs={12}>
-          <TextField disabled value={info.info.description} label="Açıklama" fullWidth />
+          <TextField
+            disabled
+            value={setter(info.description)}
+            label="Açıklama"
+            fullWidth
+          />
         </Grid>
         <Grid item xs={12} md={4}>
           <CurrencyTextField
@@ -51,6 +62,7 @@ function PaymentInfo({info}) {
             currencySymbol="₺"
             outputFormat="string"
             decimalPlaces={2}
+            value={setter(info.initialBalance)}
             disabled
           />
         </Grid>
@@ -61,6 +73,7 @@ function PaymentInfo({info}) {
             currencySymbol="₺"
             outputFormat="string"
             decimalPlaces={2}
+            value={setter(info.totalSubPayments)}
             disabled
           />
         </Grid>
@@ -71,6 +84,7 @@ function PaymentInfo({info}) {
             currencySymbol="₺"
             outputFormat="string"
             decimalPlaces={2}
+            value={setter(info.activeBalance)}
             disabled
           />
         </Grid>
@@ -79,41 +93,23 @@ function PaymentInfo({info}) {
   );
 }
 
-const _list = [
-  {
-    isDeleted: false,
-    _id: "601bd1542df40f2ca8a769df",
-    payment: "10",
-    description: "Birinci taksit",
-    updatedDate: "2021-02-04T10:50:35.386Z",
-    createdDate: "2021-02-04T10:49:56.833Z",
-  },
-  {
-    isDeleted: false,
-    _id: "6034d38988869d0d5cd8a8e3",
-    payment: "50.5",
-    description: "Üçüncü taksit",
-    updatedDate: "2021-02-23T10:06:01.923Z",
-    createdDate: "2021-02-23T10:06:01.923Z",
-  },
-  {
-    isDeleted: false,
-    _id: "6034d3a49383c91b9cf1cae8",
-    payment: "20.25",
-    description: "Dördüncü taksit",
-    updatedDate: "2021-02-23T10:06:28.814Z",
-    createdDate: "2021-02-23T10:06:28.814Z",
-  },
-];
-
 function PaymentHistory({ list, onSubpaymentDelete }) {
   return (
     <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
-      {list.map((item) => {
-        let _dt = formatDate(item.createdDate);
-        return (
-          <Card key={item._id}>
-            <CardContent>
+      <List
+        component="nav"
+        aria-labelledby="nested-list-subheader"
+        subheader={
+          <ListSubheader component="div" id="nested-list-subheader">
+            {" "}
+            Geçmiş Ödemeler
+          </ListSubheader>
+        }
+      >
+        {list.map((item) => {
+          let _dt = formatDate(item.createdDate);
+          return (
+            <ListItem button>
               <Grid container spacing={1}>
                 <Grid item xs={12} md={6}>
                   <Typography>{item.description}</Typography>
@@ -128,18 +124,24 @@ function PaymentHistory({ list, onSubpaymentDelete }) {
                   <Typography>{_dt[0] + " " + _dt[1]}</Typography>
                 </Grid>
                 <Grid item xs={12} md={1}>
-                  <IconButton aria-label="delete" onClick={(e)=>{onSubpaymentDelete(item._id)}}>
+                  <IconButton
+                    aria-label="delete"
+                    onClick={(e) => {
+                      onSubpaymentDelete(item._id);
+                    }}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </Grid>
               </Grid>
-            </CardContent>
-          </Card>
-        );
-      })}
+            </ListItem>
+          );
+        })}
+      </List>
     </div>
   );
 }
+
 
 const NewPayment = forwardRef((props, ref) => {
   const formRef = useRef();
@@ -151,7 +153,6 @@ const NewPayment = forwardRef((props, ref) => {
         let description = formRef.current["description"].value;
         let payment = formRef.current["payment"].value;
         if (payment && payment != "") {
-          console.log(description + " " + payment);
           //API
         } else {
           setcurErr(true);
@@ -192,15 +193,54 @@ const NewPayment = forwardRef((props, ref) => {
   );
 });
 
-export default function BalancePaymentDetails(props) {
+export default function BalancePaymentDetails({ paymentId, open, onClose }) {
   const newPaymentRef = useRef();
-  const classes = useStyles();
+  const confirm = useConfirm();
   const [pageIndex, setpageIndex] = useState(1);
-  const [paymentInfo, setpaymentInfo]=useState({});
+
+  const [paymentDetails, setpaymentDetails] = useState({
+    info: {},
+    subPayments: [],
+  });
+
+  function GetDetails(paymentId){
+    GetPaymentDetails(paymentId)
+    .then((response) => {
+      try {
+        if (response.data && response.data.paymentInfo) {
+          if (response.data.paymentInfo.length > 0) {
+            let paymentResponse = response.data.paymentInfo[0];
+            if (paymentResponse.info) {
+              setpaymentDetails((prevState) => ({
+                ...prevState,
+                info: paymentResponse.info,
+              }));
+            }
+            if (paymentResponse.subPayments) {
+              setpaymentDetails((prevState) => ({
+                ...prevState,
+                subPayments: paymentResponse.subPayments,
+              }));
+            }
+          }
+        }
+      } catch (e) {}
+    })
+    .catch((error) => {
+      Toast.error("Hata Oluştu");
+      onClose();
+    });
+  }
+
+  useEffect(() => {
+    if(paymentId && paymentId!==""){
+      GetDetails(paymentId);
+    }
+  }, [paymentId]);
 
   const onCancelClick = (e) => {
     if (pageIndex == 1) {
-      props.Close();
+      onClose();
     } else if (pageIndex == 2) {
       setpageIndex(1);
     } else if (pageIndex == 3) {
@@ -217,21 +257,31 @@ export default function BalancePaymentDetails(props) {
     }
   };
 
-  const onSubpaymentDelete=(_id)=>{
-    confirm({title:"Kaydı Sil", description: 'Kaydı silmek istiyor musunuz?', confirmationText:"Tamam", cancellationText:"İptal"})
-      .then(() => {  })
-      .catch(() => { });
-  }
-
-  useEffect(() => {
-
-  }, [props.paymentId]);
+  const onSubpaymentDelete = (_id) => {
+    confirm({
+      title: "Kaydı Sil",
+      description: "Kaydı silmek istiyor musunuz?",
+      confirmationText: "Tamam",
+      cancellationText: "İptal",
+    })
+      .then(() => {
+        DeleteSubPayment(_id)
+        .then((result)=>{
+          Toast.success("Ödeme Silindi");
+          GetDetails(paymentId);
+        })
+        .catch((error)=>{
+          Toast.error("Hata Oluştu");
+        })
+      })
+      .catch(() => {});
+  };
 
   return (
     <div>
       <Dialog
-        open={props.open}
-        onClose={props.Close}
+        open={open}
+        onClose={onClose}
         fullWidth={true}
         maxWidth={"md"}
         disableBackdropClick={true}
@@ -245,8 +295,11 @@ export default function BalancePaymentDetails(props) {
             {" "}
             {pageIndex == 1 ? (
               <div>
-                <PaymentInfo info={paymentInfo}/>
-                <PaymentHistory list={_list} onSubpaymentDelete={onSubpaymentDelete} />
+                <PaymentInfo info={paymentDetails.info} />
+                <PaymentHistory
+                  list={paymentDetails.subPayments}
+                  onSubpaymentDelete={onSubpaymentDelete}
+                />
               </div>
             ) : null}
           </div>

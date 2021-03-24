@@ -43,7 +43,7 @@ export default function BalanceDetailsInfo(){
                     <TextField disabled value={details.customerInfo.mail} label="Mail" fullWidth />
                 </Grid>
                 <Grid item xs={12} md={8}>
-                    <TextField disabled value={details.customerInfo.adress} label="Mail" fullWidth />
+                    <TextField disabled value={details.customerInfo.adress} label="Adres" fullWidth />
                 </Grid>
                 <Grid item xs={12} md={2}>
                     <TextField disabled value={details.customerInfo.cityName.name} label="İl" fullWidth />

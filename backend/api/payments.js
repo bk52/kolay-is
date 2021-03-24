@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const customers = require(global.appRoot + "/db/models/customers");
-const customerPayments = require(global.appRoot +"/db/models/customerPayments");
+const customerPayments = require(global.appRoot +
+  "/db/models/customerPayments");
 
 router
   .route("/")
@@ -14,22 +15,61 @@ router
     if (customerId) {
       try {
         let customerInfo = await customers.getCustomer(customerId);
-        let customerBalance = await customerPayments.getPaymentsForCustomer(customerId);
+        let customerBalance = await customerPayments.getPaymentsForCustomer(
+          customerId
+        );
         res.status(200).json({ customerInfo, customerBalance });
       } catch (e) {
         res.status(500).json({ message: "Internal Server Error" });
       }
-    } 
-    else if(paymentId){
-      try{
-        let paymentInfo=await customerPayments.getPaymentById(paymentId);
-        res.status(200).json({paymentInfo});
-      }
-      catch(e){
+    } else if (paymentId) {
+      try {
+        let paymentInfo = await customerPayments.getPaymentById(paymentId);
+        res.status(200).json({ paymentInfo });
+      } catch (e) {
         res.status(500).json({ message: "Internal Server Error" });
       }
+    } else {
+      res.status(400).json({ message: "Bad Request" });
     }
-    else {
+  })
+  .post(function (req,res){
+    let { subPayment } = req.body;
+    if(subPayment){
+      if(subPayment.parentId && subPayment.payment){
+        customerPayments.setsubPayment(subPayment)
+        .then((result)=>{res.status(200).json({});})
+        .catch((err)=>{ res.status(500).json({ message: "Internal Server Error" });})
+      }
+      else{
+        res.status(400).json({ message: "Bad Request" });
+      }
+    }
+
+  })
+  .delete(function (req, res) {
+    let { paymentId, subPaymentId } = req.query;
+    if (paymentId) {
+      customerPayments
+        .deletePayment(paymentId)
+        .then((result) => {
+          res.status(200).json({});
+        })
+        .catch((err) => {
+          global.log(err, __filename, "e", "/payments");
+          res.status(500).json({ message: "Internal Server Error" });
+        });
+    } else if (subPaymentId) {
+      customerPayments
+      .deleteSubPayment(subPaymentId)
+      .then((result) => {
+        res.status(200).json({});
+      })
+      .catch((err) => {
+        global.log(err, __filename, "e", "/payments");
+        res.status(500).json({ message: "Internal Server Error" });
+      });
+    } else {
       res.status(400).json({ message: "Bad Request" });
     }
   });

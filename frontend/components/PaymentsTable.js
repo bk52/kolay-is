@@ -1,36 +1,13 @@
 import React, { useMemo, useRef } from "react";
-import { useDispatch } from "react-redux";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Table from "./SimpleTable";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { useConfirm } from "material-ui-confirm";
-import { types } from "../redux/constants/action-types";
 import dateFormat from "../common/formatDate";
-// function RatingCell({ value}) {
-//   let intValue=Math.floor(value);
-//   return <Rating name="read-only" value={intValue} readOnly />;
-// }
 
 export default function PaymentsTable({ filterText, tableData, detailsClick }) {
   const tableInstance = useRef(null);
-  const confirm = useConfirm();
-  const dispatch = useDispatch();
 
-  // const showDetails=()=>{
-
-  // }
-
-  const EditCustomer = (value) => {
-    // dispatch({type:types.CUSTOMER_MODAL_OPEN, payload:{loading:true}})
-    // dispatch({type:types.CUSTOMER_GET, payload:{customerId:value}})
-  };
-
-  const DeleteCustomer = (value) => {
-    // confirm({title:"Kaydı Sil", description: 'Kaydı silmek istiyor musunuz?', confirmationText:"Tamam", cancellationText:"İptal"})
-    // .then(() => {  dispatch({type:types.CUSTOMER_DELETE, payload:{_id:value}}) })
-    // .catch(() => { });
-  };
 
   if (tableInstance && tableInstance.current) {
     tableInstance.current.setGlobalFilter(filterText);
@@ -91,7 +68,6 @@ export default function PaymentsTable({ filterText, tableData, detailsClick }) {
     ],
     []
   );
-  // const data = React.useMemo(() => [tableData], [])
   return (
     <div>
       <CssBaseline />

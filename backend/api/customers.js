@@ -19,7 +19,7 @@ router
           })
           .catch((err) => {
             global.log(err, __filename, "e", "/customers");
-            res.status(400).json({ message: "Bad Request" });
+            res.status(500).json({ message: "Internal Server Error" });
           });
       } else {
         customers
@@ -29,7 +29,7 @@ router
           })
           .catch((err) => {
             global.log(err, __filename, "e", "/customers");
-            res.status(400).json({ message: "Bad Request" });
+            res.status(500).json({ message: "Internal Server Error" });
           });
       }
     } catch (err) {
@@ -47,7 +47,7 @@ router
         })
         .catch((err) => {
           global.log(JSON.stringify(err), __filename, "e", "/customers");
-          res.status(400).json({ message: "Bad Request" });
+          res.status(500).json({ message: "Internal Server Error" });
         });
     } else if(customerForm) {
       customerForm.userCompanyId=userCompanyId;
@@ -58,7 +58,7 @@ router
         })
         .catch((err) => {
           global.log(JSON.stringify(err), __filename, "e", "/customers");
-          res.status(400).json({ message: "Bad Request" });
+          res.status(500).json({ message: "Internal Server Error" });
         });
     }
   })
@@ -71,7 +71,7 @@ router
       })
       .catch((err) => {
         global.log(err, __filename, "e", "/customers");
-        res.status(400).json({ message: "Bad Request" });
+        res.status(500).json({ message: "Internal Server Error" });
       });
   });
 

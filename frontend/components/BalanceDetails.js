@@ -28,13 +28,13 @@ const tabList = [
     index: 1,
     title: "TAHSİLATLAR",
     icon: <ArrowDownwardIcon />,
-    component: <BalanceHistory type={1}/>,
+    component: <BalanceHistory type={1} onRefresh={null}/>,
   },
   {
     index: 2,
     title: "BORÇLAR",
     icon: <ArrowUpwardIcon />,
-    component: <BalanceHistory type={2}/>,
+    component: <BalanceHistory type={2} onRefresh={null}/>,
   },
 ];
 
@@ -55,11 +55,17 @@ export default function BalanceDetails(props) {
   const classes = useStyles();
   const isFirstTab = (val) => {};
 
-  useEffect(() => {
+  const Refresh=()=>{
     dispatch({
       type: types.CUSTOMER_PAYMENTS_GET,
       payload: { customerId: props.customerId },
     });
+  }
+
+  useEffect(() => {
+    tabList[1].component.props.onRefresh=Refresh;
+    tabList[2].component.props.onRefresh=Refresh;
+    Refresh();
   }, []);
   
   return (
