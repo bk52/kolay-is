@@ -52,12 +52,24 @@ function DeleteSubPayment(subPaymentId, retry=false){
  })
 }
 
-function AddSubPayment(paymentInfo, retry=false){
-  
+function AddSubPayment(subPayment, retry=false){
+  return new Promise((resolve,reject)=>{
+    api.post(url.PAYMENTS,{subPayment})
+    .then((response)=>{resolve(response)})
+    .catch((error) => {
+      if(retry){ErrorHandler(error); reject(error);}
+      else{
+        AddSubPayment(subPayment,true)
+        .then((response)=>{resolve(response)})
+        .catch((error)=>{ErrorHandler(error); reject(error);})
+      }
+    })
+  })
 }
 
 export {
     GetPayments,
     GetPaymentDetails,
-    DeleteSubPayment
+    DeleteSubPayment,
+    AddSubPayment
   }

@@ -39,7 +39,7 @@ api.interceptors.response.use((response) => {
 
 function ErrorHandler(error) {
   if (error.response && error.response.data) throw error.response.data;
-  else throw error;
+  //else throw error;
 }
 
 export {api, ErrorHandler}

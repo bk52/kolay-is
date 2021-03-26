@@ -22,7 +22,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MonetizationOnOutlinedIcon from "@material-ui/icons/MonetizationOnOutlined";
 import formatDate from "../common/formatDate";
 import { useConfirm } from "material-ui-confirm";
-import { GetPaymentDetails, DeleteSubPayment } from "../redux/actions/customerPaymentsApi";
+import { GetPaymentDetails, DeleteSubPayment, AddSubPayment } from "../redux/actions/customerPaymentsApi";
 import Toast from "./Snackbar";
 
 import ListSubheader from "@material-ui/core/ListSubheader";
@@ -93,7 +93,7 @@ function PaymentInfo({ info }) {
   );
 }
 
-function PaymentHistory({ list, onSubpaymentDelete }) {
+function PaymentHistory({ list, onSubpaymentDelete, isClosed }) {
   return (
     <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
       <List
@@ -124,14 +124,11 @@ function PaymentHistory({ list, onSubpaymentDelete }) {
                   <Typography>{_dt[0] + " " + _dt[1]}</Typography>
                 </Grid>
                 <Grid item xs={12} md={1}>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={(e) => {
-                      onSubpaymentDelete(item._id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {isClosed ? null 
+                  :  <IconButton aria-label="delete" onClick={(e) => {onSubpaymentDelete(item._id);}}>
+                  <DeleteIcon />
+                </IconButton>
+                  }
                 </Grid>
               </Grid>
             </ListItem>
@@ -152,11 +149,8 @@ const NewPayment = forwardRef((props, ref) => {
       if (formRef && formRef.current) {
         let description = formRef.current["description"].value;
         let payment = formRef.current["payment"].value;
-        if (payment && payment != "") {
-          //API
-        } else {
-          setcurErr(true);
-        }
+        if (payment && payment != "") {return {payment, description};} 
+        else {setcurErr(true);return {};}
       }
     },
   }));
@@ -167,7 +161,7 @@ const NewPayment = forwardRef((props, ref) => {
         <Grid item xs={12} style={{ display: "none" }}>
           <TextField disabled id="_id" name="_id" value={props._id} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={8}>
           <TextField
             id="description"
             name="description"
@@ -175,7 +169,7 @@ const NewPayment = forwardRef((props, ref) => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={4}>
           <CurrencyTextField
             label="Ödeme"
             id="payment"
@@ -186,6 +180,7 @@ const NewPayment = forwardRef((props, ref) => {
             decimalPlaces={2}
             error={curErr}
             helperText={curErr ? "Geçerli bir bakiye giriniz" : null}
+            fullWidth
           />
         </Grid>
       </Grid>
@@ -251,7 +246,14 @@ export default function BalancePaymentDetails({ paymentId, open, onClose }) {
     if (pageIndex == 1) {
     } else if (pageIndex == 2) {
       if (newPaymentRef && newPaymentRef.current) {
-        newPaymentRef.current.SavePayment();
+       let formResult = newPaymentRef.current.SavePayment();
+       if(formResult && formResult.payment){
+        formResult.parentId=paymentId
+        AddSubPayment(formResult)
+        .then((result)=>{Toast.success("Ödeme Kaydedildi");GetDetails(paymentId)})
+        .catch((error)=>{Toast.error("Hata Oluştu "); console.log(error)});
+        setpageIndex(1);
+       }
       }
     } else if (pageIndex == 3) {
     }
@@ -299,6 +301,7 @@ export default function BalancePaymentDetails({ paymentId, open, onClose }) {
                 <PaymentHistory
                   list={paymentDetails.subPayments}
                   onSubpaymentDelete={onSubpaymentDelete}
+                  isClosed={paymentDetails.isClosed}
                 />
               </div>
             ) : null}

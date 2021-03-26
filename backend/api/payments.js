@@ -34,16 +34,21 @@ router
     }
   })
   .post(function (req,res){
-    let { subPayment } = req.body;
+    let { subPayment ,payment } = req.body;
     if(subPayment){
       if(subPayment.parentId && subPayment.payment){
         customerPayments.setsubPayment(subPayment)
         .then((result)=>{res.status(200).json({});})
-        .catch((err)=>{ res.status(500).json({ message: "Internal Server Error" });})
+        .catch((err)=>{ res.status(500).json({ message: err });})
       }
       else{
         res.status(400).json({ message: "Bad Request" });
       }
+    }
+    else if(payment){
+      customerPayments.setPayment(payment)
+      .then((result)=>{res.status(200).json({});})
+      .catch((err)=>{res.status(500).json({ message: "Internal Server Error" });})
     }
 
   })

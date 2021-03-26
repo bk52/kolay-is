@@ -21,7 +21,7 @@ const searchRouter = require("./api/search");
 const logMiddleware = require("./common/middleware/reqLogger");
 const verifyMiddleware = require("./common/middleware/verifyToken");
 
-// const paymentDB = require("./db/models/customerPayments");
+ const paymentDB = require("./db/models/customerPayments");
 
 db.Connect()
   .then((res) => {
@@ -39,9 +39,15 @@ db.Connect()
     app.use("/api/search", verifyMiddleware, searchRouter);   
     app.listen(port, () => console.log("Server Ready On port " + port));
 
-    // paymentDB.getPaymentById("601bd0f4be72d839303adcd3")
-    // .then((res)=>{console.log(JSON.stringify(res,null,4))})
-    // .catch((err)=>{console.log(err)})
+    let subPayment={
+        "parentId":"601bd0f4be72d839303adcd3",
+        "payment":"100",
+        "description":"From API"
+    }
+    // paymentDB.setsubPayment(subPayment)
+    //  .then((res)=>{console.log(JSON.stringify(res,null,4))})
+    //  .catch((err)=>{console.log(err)})
+
   })
   .catch((err) => {
     global.log(err, __filename, "e");
