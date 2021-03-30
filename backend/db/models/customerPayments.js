@@ -328,24 +328,34 @@ customerPaymentSchema.statics.setsubPayment = function (subPayment) {
 };
 
 customerPaymentSchema.statics.deletePayment = function (paymentId) {
-  if (paymentId && paymentId !== "") {
-    return this.findOneAndUpdate(
-      { _id: paymentId },
-      { isDeleted: true, deletedDate: new Date() }
-    ).lean();
-  }
+  return new Promise((resolve, reject) => {
+    if (paymentId && paymentId !== "") {
+     this.findOneAndUpdate(
+        { _id: paymentId },
+        { isDeleted: true, deletedDate: new Date() }
+      ).lean()
+      .then((data)=>{resolve({});})
+      .catch((error)=>{reject({});})
+    }
+    else{reject({});}
+  })
 };
 
 customerPaymentSchema.statics.deleteSubPayment = function (paymentId) {
-  if (paymentId && paymentId !== "") {
-    return this.findOneAndUpdate(
-      { "paymentHistory._id": paymentId },
-      {
-        "paymentHistory.$.isDeleted": true,
-        "paymentHistory.$.deletedDate": new Date(),
-      }
-    ).lean();
-  }
+  return new Promise((resolve, reject) => {
+    if (paymentId && paymentId !== "") {
+     this.findOneAndUpdate(
+        { "paymentHistory._id": paymentId },
+        {
+          "paymentHistory.$.isDeleted": true,
+          "paymentHistory.$.deletedDate": new Date(),
+        }
+      ).lean()
+      .then((data)=>{resolve({});})
+      .catch((error)=>{reject({});})
+    }
+    else{reject({});}
+  })
 };
 
 const customerPaymentModel = mongoose.model(

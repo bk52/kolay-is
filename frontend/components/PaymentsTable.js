@@ -20,11 +20,11 @@ export default function PaymentsTable({ filterText, tableData, detailsClick }) {
         disableSortBy: true,
       },
       {
-        Header: "İlk Bakiye",
+        Header: "İlk Bakiye (₺)",
         accessor: "initialBalance",
       },
       {
-        Header: "Kalan Bakiye",
+        Header: "Kalan Bakiye (₺)",
         accessor: "activeBalance",
       },
       {
@@ -32,12 +32,7 @@ export default function PaymentsTable({ filterText, tableData, detailsClick }) {
         accessor: "lastPaymentDate",
         Cell: (props) => {
           let dateArr = dateFormat(props.value);
-          return (
-            <div>
-              <div>{dateArr[0]}</div>
-              <div>{dateArr[1]}</div>
-            </div>
-          );
+          return (<div>{dateArr[0]}</div>);
         },
       },
       {
@@ -46,9 +41,8 @@ export default function PaymentsTable({ filterText, tableData, detailsClick }) {
         Cell: (props) => {
           let dateArr = dateFormat(props.value);
           return (
-            <div>
-              <div>{dateArr[0]}</div>
-              <div>{dateArr[1]}</div>
+            <div style={{ display: "inline-flex" }}>
+              <div>{dateArr[0] + " " + dateArr[1]}</div>
             </div>
           );
         },

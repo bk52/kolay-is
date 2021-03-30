@@ -57,9 +57,7 @@ router
     if (paymentId) {
       customerPayments
         .deletePayment(paymentId)
-        .then((result) => {
-          res.status(200).json({});
-        })
+        .then((result) => {res.status(200).json({});})
         .catch((err) => {
           global.log(err, __filename, "e", "/payments");
           res.status(500).json({ message: "Internal Server Error" });
