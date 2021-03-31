@@ -24,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const data = [
-  { name: "Gecikmiş", value: 400, unit: "₺", color: "#ef233c" },
-  { name: "Planlanmamış", value: 300, unit: "₺", color: "#38a3a5" },
-  { name: "Diğer", value: 200, unit: "₺", color: "#b1a7a6" },
+  { name: "Gecikmiş", value: 400, unit: "₺", color: "#DC3545" },
+  { name: "Planlanmamış", value: 300, unit: "₺", color: "#007BFF" },
+  { name: "Diğer", value: 200, unit: "₺", color: "#28A745" },
 ];
 
 let selectedId="";

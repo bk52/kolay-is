@@ -11,6 +11,8 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
+import {SetPayment} from "../redux/actions/customerPaymentsApi";
+import Toast from "./Snackbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,12 +38,15 @@ export default function BalanceNew(props) {
     let initialBalance = formRef.current["initialBalance"].value;
     let customerId=formRef.current["customerId"].value;
     if(initialBalance && customerId){
-        let _values ={
+        let payment ={
             customerId:customerId,
+            paymentType:props.paymentType,
             description:formRef.current["description"].value,
             initialBalance:initialBalance,
         }
-        alert("Ödemeyi KAYDET");
+        SetPayment(payment)
+        .then((result)=>{Toast.success("Ödeme Kaydedildi");props.onPaymentSave()})
+        .catch((error)=>{Toast.error("Hata Oluştu ");console.log(error);})
     }
     else{
         setcurErr(true);
@@ -65,7 +70,7 @@ export default function BalanceNew(props) {
             <TextField disabled id="customerId" name="customerId"  value={props.customerId}/>
            </Grid>
             <Grid container className={classes.root} spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={8}>
                 <TextField
                   id="description"
                   name="description"
@@ -73,7 +78,7 @@ export default function BalanceNew(props) {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={4}>
                 <CurrencyTextField
                   label="İlk Bakiye"
                   variant="standard"

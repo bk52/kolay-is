@@ -328,9 +328,8 @@ export default function BalancePaymentDetails({ paymentId, open, onClose }) {
         <DialogActions>
           {pageIndex == 1 ? (
             <div>
-              <Button onClick={(e) => {setpageIndex(2);}} variant="contained" startIcon={<MonetizationOnOutlinedIcon />} color="#28A745">
-                YENİ ÖDEME
-              </Button>{"  "}
+              {paymentDetails.info.isClosed ? null :<Button onClick={(e) => {setpageIndex(2);}} variant="contained" startIcon={<MonetizationOnOutlinedIcon />} color="#28A745">YENİ ÖDEME</Button>}
+              {"  "}
               <Button onClick={(e)=>{onDeleteClick(paymentId)}} variant="contained" color="secondary" startIcon={<DeleteIcon />}>
                 ÖDEMEYİ SİL
               </Button>

@@ -41,13 +41,7 @@ export default function CustomerPage() {
         <LinearProgress />
       ) : (
         <div>
-          <CustomerSearch 
-          textChanged={textChanged} 
-          buttonClick={addNew} 
-          textLabel={"Müşterilerde Ara"}
-          buttonIcon={<AddIcon />}
-          buttonTooltip={"Yeni Kullanıcı"}
-          />
+          <CustomerSearch textChanged={textChanged} buttonClick={addNew} textLabel={"Müşterilerde Ara"}buttonIcon={<AddIcon />}buttonTooltip={"Yeni Kullanıcı"} />
           <CustomerTable filterText={filterText} tableData={apiData} />
           <CustomerDialog open={customerState.openModal} loading={customerState.customerFormLoading}></CustomerDialog>
         </div>

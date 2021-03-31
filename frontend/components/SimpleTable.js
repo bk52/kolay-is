@@ -73,7 +73,7 @@ const Table = React.forwardRef(({ columns, data }, ref) =>{
         {headerGroups.map((headerGroup) => (
           <TableRow {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <StyledTableCell  {...column.getHeaderProps(column.getSortByToggleProps())}>
+              <StyledTableCell  {...column.getHeaderProps(column.getSortByToggleProps())} style={{padding:"0px", paddingLeft:"16px"}}>
                 {column.render("Header")}
                 {column.id !== 'selection' ? (
                     <TableSortLabel
@@ -94,7 +94,7 @@ const Table = React.forwardRef(({ columns, data }, ref) =>{
             <TableRow {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 return (
-                  <TableCell {...cell.getCellProps()}>
+                  <TableCell {...cell.getCellProps()} style={{padding:"0px", paddingLeft:"16px"}}>
                     {cell.render("Cell")}
                   </TableCell>
                 );

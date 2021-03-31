@@ -46,9 +46,17 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
-  label: {
-    textTransform: "none",
+  labelContainer: {
+    width: "auto",
+    padding: 0,
   },
+  iconLabelWrapper: {
+    flexDirection: "row",
+  },
+  labelIcon:{
+    minHeight: "0px",
+    paddingTop: "9px"
+  }
 }));
 
 export default React.forwardRef((props, ref) => {
@@ -72,8 +80,12 @@ export default React.forwardRef((props, ref) => {
   props.tabList.map((item) => {
     tabItems.push(
       <Tab
-        className={classes.label}
-        label={item.title}
+        classes={{
+          wrapper: classes.iconLabelWrapper,
+          labelContainer: classes.labelContainer,
+          labelIcon:classes.labelIcon
+        }}
+        label={<span style={{paddingLeft:"8px"}}>{item.title}</span>}
         icon={item.icon}
         {...a11yProps(item.index)}
       />
@@ -103,11 +115,11 @@ export default React.forwardRef((props, ref) => {
 
   return (
     <div className={classes.root}>
-        <AppBar position="static">
+       <AppBar position="static">
           <Tabs value={value} onChange={handleChange}>
             {tabItems}
           </Tabs>
-        </AppBar>
+         </AppBar>
       {tabPanels}
     </div>
   );

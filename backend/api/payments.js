@@ -46,6 +46,10 @@ router
       }
     }
     else if(payment){
+      if(!payment._id){
+        let _now= new Date();
+        payment.lastPaymentDate= new Date( _now.setMonth(_now.getMonth()+1));
+      }
       customerPayments.setPayment(payment)
       .then((result)=>{res.status(200).json({});})
       .catch((err)=>{res.status(500).json({ message: "Internal Server Error" });})
