@@ -23,7 +23,7 @@ export default function BalanceHistory(props) {
   
     return (
           <div>
-            <PaymentInfo/>
+            <PaymentInfo paymentType={props.type} stats={details.paymentStats[0]}/>
             <CustomerSearch textChanged={textChanged} buttonClick={(e)=>{ChangeNewModal(true)}} textLabel={"Geçmişte Ara"}buttonIcon={<AddIcon />}buttonTooltip={"Yeni İşlem"}/>
             <PaymentsTable filterText={filterText} tableData={props.type==1 ? details.paymentInfo : details.collectionInfo} detailsClick={showPaymentDetails}/>
             <BalanceNewRecord open={newModal} onPaymentSave={NewPaymentSave} paymentType={props.type} title={props.type==1 ? "Yeni Tahsilat" : " Yeni Borç"} customerId={details.customerInfo._id} Close={CloseNewModal}/>

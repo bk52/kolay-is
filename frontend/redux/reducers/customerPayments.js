@@ -5,6 +5,7 @@ var initialState = {
   customerInfo: {},
   paymentInfo: {},
   collectionInfo:{},
+  paymentStats:{},
   isLoading: true,
 };
 
@@ -22,6 +23,7 @@ export default function (state = initialState, action) {
         customerInfo: action.payload.customerInfo,
         paymentInfo: _income,
         collectionInfo:_expense,
+        paymentStats:action.payload.balanceStats
       });
     }
     case types.CUSTOMER_PAYMENTS_API_ERROR: {

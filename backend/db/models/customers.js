@@ -107,6 +107,10 @@ customerSchema.statics.getCompanyCustomers = function (companyId) {
     .lean();
 };
 
+customerSchema.statics.getCompanyCustomersIds = function (companyId) {
+  return this.find({ userCompanyId: companyId, isDeleted: false },"_id").lean();
+};
+
 customerSchema.statics.getCompanyCustomersDetails = function (companyId) {
   return this.find({ userCompanyId: companyId, isDeleted: false }).lean();
 };

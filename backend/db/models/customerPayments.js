@@ -4,6 +4,7 @@ const PaymentType = {
   INCOME: 1, // Gelir - Tahsilat
   EXPENSE: 2, // Gider - Ödeme
 };
+const customersModal= require("./customers");
 
 const paymentHistorySchema = new Schema(
   {
@@ -250,9 +251,7 @@ customerPaymentSchema.statics.getPaymentsForCustomer = function (customerId) {
       },
       {
         $set: {
-          activeBalance: {
-            $toString: { $subtract: ["$initialBalance", "$totalPayments"] },
-          },
+          activeBalance: {$toString: { $subtract: ["$initialBalance", "$totalPayments"] },},
           initialBalance: { $toString: "$initialBalance" },
           totalPayments: { $toString: "$totalPayments" },
         },
@@ -266,6 +265,82 @@ customerPaymentSchema.statics.getPaymentsForCustomer = function (customerId) {
       });
   });
 };
+
+customerPaymentSchema.statics.getSummaryForCustomer = function (customerId) {
+  return new Promise((resolve, reject) => {
+    this.aggregate([
+     {
+      $match: { customerId: customerId, isDeleted: false,}
+     },
+     {
+      $project: {
+        lastPaymentDate: 1,
+        initialBalance: 1,
+        isClosed:1,
+        paymentType:1,
+        totalPayments: {
+          $reduce: {
+            input: "$paymentHistory",
+            initialValue: 0,
+            in: {
+              $cond: {
+                if: { $eq: ["$$this.isDeleted", false] },
+                then: { $add: ["$$value", "$$this.payment"] },
+                else: { $add: ["$$value", 0] },
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $facet:{
+        incomeSum:[
+          {$match:{"paymentType":1}},
+          {$group: { _id: null, payment: { $sum: "$initialBalance" } } }
+        ],
+        incomeActive:[
+          {$match:{"paymentType":1}},
+          {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+          { $set: {"payment":{$subtract: ["$init","$total"]}},},
+        ],
+        incomeDelayed:[
+          {$match:{"paymentType":1, "isClosed":false, "lastPaymentDate":{$lt:new Date()}}},
+          {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+          { $set: {"payment":{$subtract: ["$init","$total"]}}}
+        ],
+        expenseSum:[
+          {$match:{"paymentType":2}},
+          {$group: { _id: null, payment: { $sum: "$initialBalance" } } }
+        ],
+        expenseActive:[
+          {$match:{"paymentType":2}},
+          {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+          { $set: {"payment":{$subtract: ["$init","$total"]}},},
+        ],
+        expenseDelayed:[
+          {$match:{"paymentType":2, "isClosed":false, "lastPaymentDate":{$lt:new Date()}}},
+          {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+          { $set: {"payment":{$subtract: ["$init","$total"]}}}
+        ]
+      }
+    },
+    {
+      $set:{
+        incomeSum:{$toString:{$ifNull: [{ $first:"$incomeSum.payment"}, 0]}},
+        incomeActive:{$toString:{$ifNull: [{ $first:"$incomeActive.payment"}, 0]}},
+        incomeDelayed:{$toString:{$ifNull: [{ $first:"$incomeDelayed.payment"}, 0]}},
+        expenseSum:{$toString:{$ifNull: [{ $first:"$expenseSum.payment"}, 0]}},
+        expenseActive:{$toString:{$ifNull: [{ $first:"$expenseActive.payment"}, 0]}},
+        expenseDelayed:{$toString:{$ifNull: [{ $first:"$expenseDelayed.payment"}, 0]}},
+      }
+    }
+
+    ])
+    .then((queryRes) => {resolve(queryRes);})
+    .catch((queryErr) => {reject(queryErr);});
+  })
+}
 
 customerPaymentSchema.statics.setPayment = function (payment) {
   return new Promise((resolve, reject) => {
@@ -357,6 +432,80 @@ customerPaymentSchema.statics.deleteSubPayment = function (paymentId) {
     else{reject({});}
   })
 };
+
+customerPaymentSchema.statics.getActiveStatsForUser=function(userCompanyId){
+  return new Promise((resolve, reject) => {
+    customersModal.getCompanyCustomersIds(userCompanyId)
+    .then((companies)=>{
+      let ids=[];
+      companies.map((item)=>{ids.push(item._id.toString())});
+      this.aggregate([
+        {
+          $match: {
+            isClosed:false,
+            isDeleted: false,
+            customerId: { $in: ids}
+          }
+        },
+        {
+          $project:{
+            paymentType:1,
+            initialBalance:1,
+            lastPaymentDate:1,
+            totalPayments: {
+              $reduce: {
+                input: "$paymentHistory",
+                initialValue: 0,
+                in: {
+                  $cond: {
+                    if: { $eq: ["$$this.isDeleted", false] },
+                    then: { $add: ["$$value", "$$this.payment"] },
+                    else: { $add: ["$$value", 0] },
+                  },
+                },
+              },
+            },
+          }
+        },
+        {
+          $facet: {
+            incomeActive:[
+              {$match:{"paymentType":1}},
+              {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+              { $set: {"payment":{$subtract: ["$init","$total"]}},},
+            ],
+            incomeDelayed:[
+              {$match:{"paymentType":1, "lastPaymentDate":{$lt:new Date()}}},
+              {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+              { $set: {"payment":{$subtract: ["$init","$total"]}}}
+            ],
+            expenseActive:[
+              {$match:{"paymentType":2}},
+              {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+              { $set: {"payment":{$subtract: ["$init","$total"]}},},
+            ],
+            expenseDelayed:[
+              {$match:{"paymentType":2, "lastPaymentDate":{$lt:new Date()}}},
+              {$group: { _id: null, init:{$sum: "$initialBalance"}, total: { $sum: "$totalPayments" } } },
+              { $set: {"payment":{$subtract: ["$init","$total"]}}}
+            ]
+          }
+        },
+        {
+          $set:{
+            incomeActive:{$toString:{$ifNull: [{ $first:"$incomeActive.payment"}, 0]}},
+            incomeDelayed:{$toString:{$ifNull: [{ $first:"$incomeDelayed.payment"}, 0]}},
+            expenseActive:{$toString:{$ifNull: [{ $first:"$expenseActive.payment"}, 0]}},
+            expenseDelayed:{$toString:{$ifNull: [{ $first:"$expenseDelayed.payment"}, 0]}},
+          }
+        }
+      ])
+      .then((data)=>{resolve(data)})
+      .catch((err)=>{reject(err);})
+    })
+    .catch((error)=>{reject(error);})
+  })
+}
 
 const customerPaymentModel = mongoose.model(
   "customers_payments",
