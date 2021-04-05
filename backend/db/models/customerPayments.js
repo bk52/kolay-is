@@ -492,15 +492,24 @@ customerPaymentSchema.statics.getActiveStatsForUser=function(userCompanyId){
           }
         },
         {
-          $set:{
+          $set:{ 
+            incomeSum:{ $toString:{$add: [ {$ifNull: [{ $first:"$incomeActive.payment"}, 0]}, {$ifNull: [{ $first:"$incomeDelayed.payment"}, 0]} ] }},
             incomeActive:{$toString:{$ifNull: [{ $first:"$incomeActive.payment"}, 0]}},
             incomeDelayed:{$toString:{$ifNull: [{ $first:"$incomeDelayed.payment"}, 0]}},
+            expenseSum:{ $toString:{$add: [ {$ifNull: [{ $first:"$expenseActive.payment"}, 0]}, {$ifNull: [{ $first:"$expenseDelayed.payment"}, 0]} ] }},
             expenseActive:{$toString:{$ifNull: [{ $first:"$expenseActive.payment"}, 0]}},
             expenseDelayed:{$toString:{$ifNull: [{ $first:"$expenseDelayed.payment"}, 0]}},
           }
-        }
+        },
       ])
-      .then((data)=>{resolve(data)})
+      .then((data)=>{
+        if(data && data.length>0){
+          resolve(data[0]);
+        }
+        else{
+          resolve({});
+        }
+      })
       .catch((err)=>{reject(err);})
     })
     .catch((error)=>{reject(error);})

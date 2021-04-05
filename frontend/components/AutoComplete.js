@@ -9,7 +9,7 @@ import {FindCustomers} from "../redux/actions/customersApi";
 
 let prevSearchText = "";
 
-export default function AutoBox({sourceURL, selectedChanged}) {
+export default function AutoBox({selectedChanged}) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState([]);
     const [optionText, setoptionText]= React.useState("En az 3 harf girin")

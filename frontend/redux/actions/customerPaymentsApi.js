@@ -16,6 +16,14 @@ function GetPaymentDetails(paymentId){
   })
 }
 
+function GetPaymentStats(){
+  return new Promise((resolve,reject)=>{
+    api.get(url.PAYMENTS,{params:{activeStats:1}})
+    .then((response)=>{ resolve(response)})
+    .catch((error) => {ErrorHandler(error); reject(error);})
+  })
+}
+
 function DeleteSubPayment(subPaymentId){
   return new Promise((resolve,reject)=>{
     api.delete(url.PAYMENTS,{params:{subPaymentId:subPaymentId}})
@@ -51,6 +59,7 @@ function DeletePayment(paymentId){
 export {
     GetPayments,
     GetPaymentDetails,
+    GetPaymentStats,
     DeleteSubPayment,
     AddSubPayment,
     SetPayment,

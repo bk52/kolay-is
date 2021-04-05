@@ -29,7 +29,7 @@ router
         res.status(500).json({ message: "Internal Server Error" });
       }
     } 
-    else if(activeStats){
+    else if(activeStats && userCompanyId && userCompanyId!=""){
       try {
         let stats = await customerPayments.getActiveStatsForUser(userCompanyId);
         res.status(200).json({ stats });

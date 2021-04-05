@@ -50,7 +50,7 @@ const MenuItems = [
   { key: 4, icon: <ArrowBackIcon />, title: lang.Menu_Tedarikciler, url: "/coming/Tedarikçiler" },
   { key: 5, icon: <AttachMoneyIcon />, title: lang.Menu_Ödemeler, url: "/accountBalance" },
   { key: 6, icon: <ListIcon />, title: lang.Menu_Ürünler, url: "/coming/Ürünler" },
-  { key: 7, icon: <BarChartIcon />, title: lang.Menu_Raporlar, url: "/coming/Raporlar" },
+  { key: 7, icon: <BarChartIcon />, title: lang.Menu_Raporlar, url: "/reports" },
 ];
 
 export default function PersistentDrawerLeft(props) {

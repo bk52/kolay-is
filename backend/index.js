@@ -39,9 +39,9 @@ db.Connect()
     app.use("/api/search", verifyMiddleware, searchRouter);   
     app.listen(port, () => console.log("Server Ready On port " + port));
 
-    paymentDB.getActiveStatsForUser("5fd7b0dc343a357111e2c20c")
-     .then((res)=>{console.log(JSON.stringify(res,null,4))})
-     .catch((err)=>{console.log(err)})
+    // paymentDB.getActiveStatsForUser("5fd7b0dc343a357111e2c20c")
+    //  .then((res)=>{console.log(JSON.stringify(res,null,4))})
+    //  .catch((err)=>{console.log(err)})
 
   })
   .catch((err) => {

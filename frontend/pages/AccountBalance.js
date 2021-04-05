@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -8,9 +8,7 @@ import AutoComplete from "../components/AutoComplete";
 import BalanceDetails from "../components/BalanceDetails";
 import Fab from "@material-ui/core/Fab";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { url } from "../redux/constants/action-url";
-
-import BalancePaymentDetails from "../components/BalancePaymentDetails";
+import {GetPaymentStats} from "../redux/actions/customerPaymentsApi"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,19 +21,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const data = [
-  { name: "Gecikmiş", value: 400, unit: "₺", color: "#DC3545" },
-  { name: "Planlanmamış", value: 300, unit: "₺", color: "#007BFF" },
-  { name: "Diğer", value: 200, unit: "₺", color: "#28A745" },
-];
-
 let selectedId="";
 export default function AccountBalance(props) {
   const classes = useStyles();
-  const [details, setDetails]=useState({
-    showDetails:false,
-    customerId:""
-  })
+  const [activeStats,setActiveStats]=useState({
+    incomeSum:0,
+    incomeActive:0,
+    incomeDelayed:0,
+    expenseSum:0,
+    expenseActive:0,
+    expenseDelayed:0
+  });
+  const [details, setDetails]=useState({showDetails:false,customerId:""})
+
+  useEffect(() => {
+    GetPaymentStats()
+    .then((response)=>{
+      if(response && response.data && response.data.stats){
+        setActiveStats({
+          incomeSum:parseFloat(response.data.stats.incomeSum),
+          incomeActive:parseFloat(response.data.stats.incomeActive),
+          incomeDelayed:parseFloat(response.data.stats.incomeDelayed),
+          expenseSum:parseFloat(response.data.stats.expenseSum),
+          expenseDelayed:parseFloat(response.data.stats.expenseDelayed),
+          expenseActive:parseFloat(response.data.stats.expenseActive),
+        })
+      }
+    })
+    .catch((err)=>{console.log(err)})
+  }, []);
 
   function AutoCompleteChanged(e){
     if(e){selectedId=e._id;}
@@ -45,22 +59,15 @@ export default function AccountBalance(props) {
     e.preventDefault();
     e.stopPropagation();
     if(selectedId && selectedId!=""){
-      setDetails({
-        customerId:selectedId,
-        showDetails:true
-      })
+      setDetails({customerId:selectedId,showDetails:true})
     }
   }
 
   function GoAccountBalance(){
-    setDetails({
-      customerId:"",
-      showDetails:false
-    })
+    setDetails({ customerId:"",showDetails:false})
   }
    
   return (
-    // <BalancePaymentDetails open={true} /> 
     <div className={classes.root}>
      { 
         details.showDetails ?  <BalanceDetails customerId={details.customerId} GoAccountBalance={GoAccountBalance}></BalanceDetails>
@@ -70,17 +77,17 @@ export default function AccountBalance(props) {
             <Typography variant="h5" gutterBottom>
               Tahsilatlar
             </Typography>
-            <CustomPieChart
+            {activeStats.incomeSum && activeStats.incomeSum!=0 ? <CustomPieChart
               width={500}
               heigth={500}
-              centerText={{
-                title: "Genel Toplam",
-                value: 900,
-                unit: "₺",
-                fill: "#52b788",
-              }}
-              data={data}
-            />
+              centerText={{title: "Genel Toplam",value: activeStats.incomeSum,unit: "₺",fill: "#52b788"}}
+              data={
+                [
+                  {name: "Aktif", value: activeStats.incomeActive, unit: "₺", color: "#28A745" },
+                  {name: "Gecikmiş", value: activeStats.incomeDelayed, unit: "₺", color: "#DC3545"}
+                ]
+              }
+            /> : "Tahsilat bilgisi bulunamadı"}
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -88,24 +95,24 @@ export default function AccountBalance(props) {
             <Typography variant="h5" gutterBottom>
               Borçlar
             </Typography>
-            <CustomPieChart
+            {activeStats.expenseSum && activeStats.expenseSum!=0 ? <CustomPieChart
               width={500}
               heigth={500}
-              centerText={{
-                title: "Genel Toplam",
-                value: 900,
-                unit: "₺",
-                fill: "#52b788",
-              }}
-              data={data}
-            />
+              centerText={{title: "Genel Toplam",value: activeStats.expenseSum,unit: "₺",fill: "#52b788"}}
+              data={
+                [
+                  {name: "Aktif", value: activeStats.expenseActive, unit: "₺", color: "#28A745" },
+                  {name: "Gecikmiş", value: activeStats.expenseDelayed, unit: "₺", color: "#DC3545"}
+                ]
+              }
+            /> : "Borç bilgisi bulunamadı"}
           </Paper>
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.paper} style={{padding: "8px"}}>
             <Grid container>
               <Grid item xs={10}>
-                <AutoComplete sourceURL={url.SEARCH} selectedChanged={AutoCompleteChanged}/>
+                <AutoComplete selectedChanged={AutoCompleteChanged}/>
               </Grid>
               <Grid item xs={2} style={{paddingTop: "4px"}}>
                 <Fab size="small" color="primary" aria-label="add" onClick={(e)=>GetDetails(e)}>
