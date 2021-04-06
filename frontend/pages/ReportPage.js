@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
+import ReportCase from "../components/ReportCase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +20,11 @@ const useStyles = makeStyles((theme) => ({
   active:{
       backgroundColor:"#17A2B8",
       color:"white"
+  },
+  reportPaper:{
+    padding:"8px",
+    width:"500px",
+    margin:"auto"
   }
 }));
 
@@ -53,6 +59,12 @@ export default function ReportPage() {
           </Paper>
         </Grid>
       </Grid>
+      
+      <br/>
+      <Paper className={classes.reportPaper}>
+          <ReportCase/>
+      </Paper>
+  
     </div>
   );
 }
