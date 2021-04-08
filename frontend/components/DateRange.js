@@ -7,6 +7,7 @@ import React, {
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
+import dateFormat from "../common/datepickerFormat";
 
 const useStyles = makeStyles((theme) => ({
   root: { flexGrow: 1 },
@@ -21,11 +22,6 @@ const DateRange = forwardRef((props, ref) => {
       prevDate.setMonth(prevDate.getMonth() - 1);
       setformVal({startDate: dateFormat(prevDate), finishDate: dateFormat(new Date())});
   }, []);
-  const dateFormat = (value) => {
-    let dt= new Date(value);
-    let _date=dt.getFullYear() + "-" +  (dt.getMonth()+1).toString().padStart(2,'0') + "-" + dt.getDate().toString().padStart(2,'0') ;
-    return _date;
-};
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setformVal((prevState) => ({ ...prevState, [name]: value }));

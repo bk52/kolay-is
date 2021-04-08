@@ -7,6 +7,7 @@ import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
 import ReportCase from "../components/ReportCase";
+import ReportCompanyAccount from "../components/ReportCompanyAccount";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,56 +16,43 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     textAlign: "center",
     color: theme.palette.text.secondary,
-    cursor:"pointer"
+    cursor: "pointer",
   },
-  active:{
-      backgroundColor:"#17A2B8",
-      color:"white"
+  active: {
+    backgroundColor: "#17A2B8",
+    color: "white",
   },
-  reportPaper:{
-    padding:"8px",
-    width:"500px",
-    margin:"auto"
-  }
+  reportPaper: {
+    padding: "8px",
+    width: "500px",
+    margin: "auto",
+  },
 }));
+
+const ReportTypes = [
+  { id: 0, title: "KASA RAPORU", icon: <AccountBalanceIcon /> },
+  { id: 1, title: "ÜRÜN SATIŞ RAPORU", icon: <AttachMoneyIcon /> },
+  { id: 2, title: "FİRMA HESAP ÖZETİ", icon: <AccountBalanceWalletOutlinedIcon />},
+];
 
 export default function ReportPage() {
   const classes = useStyles();
-  const [selected,setSelected]=useState(0);
+  const [selected, setSelected] = useState(0);
+  const onNewReport=(data)=>{console.log(data)}
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={12} md={4}>
-          <Paper className={[classes.paper, selected==1 ? classes.active : ""]} onClick={(e)=>{setSelected(1)}}>
-            <AccountBalanceIcon /><br/>
-            <Typography variant="button" gutterBottom>
-              Kasa Raporu
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-        <Paper className={[classes.paper, selected==2 ? classes.active : ""]} onClick={(e)=>{setSelected(2)}}>
-            <AttachMoneyIcon /><br/>
-            <Typography variant="button" gutterBottom>
-              Ürün Satış Raporları
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4}>
-        <Paper className={[classes.paper, selected==3 ? classes.active : ""]} onClick={(e)=>{setSelected(3)}}>
-            <AccountBalanceWalletOutlinedIcon /><br/>
-            <Typography variant="button" gutterBottom>
-              Firma Hesap Özeti
-            </Typography>
-          </Paper>
-        </Grid>
+        {ReportTypes.map((item) => {
+          return <Grid item xs={12} md={4}>
+            <Paper className={[classes.paper, selected == item.id ? classes.active : ""]} onClick={(e) => {setSelected(item.id);}}>
+              {item.icon}<br /><Typography variant="button" gutterBottom>{item.title}</Typography>
+            </Paper>
+          </Grid>;
+        })}
       </Grid>
-      
-      <br/>
-      <Paper className={classes.reportPaper}>
-          <ReportCase/>
-      </Paper>
-  
-    </div>
+      <br />
+      {selected==0 || selected == 1 ? <Paper className={classes.reportPaper}><ReportCase title={ReportTypes[selected].title} onNewReport={onNewReport}/></Paper> : null}
+      {selected==2 ? <Paper className={classes.reportPaper}><ReportCompanyAccount title={ReportTypes[selected].title} onNewReport={onNewReport}/></Paper> : null}
+    </div> 
   );
 }

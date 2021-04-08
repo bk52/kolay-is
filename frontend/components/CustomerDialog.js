@@ -8,10 +8,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import { types } from "../redux/constants/action-types";
-
 import Tabs from "./Tabs";
 import LinearProgress from "@material-ui/core/LinearProgress";
-
 import CustomerInfo from "./CustomerInfo";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import WorkIcon from "@material-ui/icons/Work";

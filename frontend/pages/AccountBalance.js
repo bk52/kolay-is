@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import CustomPieChart from "../components/CustomPieChart";
@@ -9,6 +10,8 @@ import BalanceDetails from "../components/BalanceDetails";
 import Fab from "@material-ui/core/Fab";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import {GetPaymentStats} from "../redux/actions/customerPaymentsApi"
+import CaseDialog from "../components/CaseDialog";
+import Dialog from "@material-ui/core/Dialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     color: theme.palette.text.secondary,
   },
+  activeButtons:{
+    width:"90%",
+    marginBottom:"8px"
+  }
 }));
 
 let selectedId="";
@@ -88,6 +95,7 @@ export default function AccountBalance(props) {
                 ]
               }
             /> : "Tahsilat bilgisi bulunamadı"}
+            <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#28A745", color: "white"}}>Aktif Tahsilatları Göster</Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -106,6 +114,7 @@ export default function AccountBalance(props) {
                 ]
               }
             /> : "Borç bilgisi bulunamadı"}
+             <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#DC3545", color: "white"}}>Aktif Borçları Göster</Button>
           </Paper>
         </Grid>
         <Grid item xs={12}>
@@ -122,8 +131,12 @@ export default function AccountBalance(props) {
             </Grid>
           </Paper>
         </Grid>
+        <Grid item xs={12}>
+          <Button variant="contained" color="primary" fullWidth>KASAYA GİT</Button>
+        </Grid>
       </Grid>
      }
+     <CaseDialog open={true}/>
     </div>
   );
 }

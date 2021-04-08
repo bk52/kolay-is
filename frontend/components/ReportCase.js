@@ -12,18 +12,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ReportCase() {
+export default function ReportCase({title, onNewReport}) {
   const classes = useStyles();
   const datePickerRef=useRef();
   const onCreateReport=()=>{
     if(datePickerRef && datePickerRef.current){
         let dateRange = datePickerRef.current.GetDate();
-        console.log(dateRange);
+        onNewReport(dateRange);
       }
   }
   return (
     <div>  
-       <Typography variant="h5"><AccountBalanceIcon/> Kasa Raporu</Typography>
+       <Typography variant="h5"><AccountBalanceIcon/> {title}</Typography>
         <hr/>
          <DateRange ref={datePickerRef}/>
          <Grid container spacing={1}>
