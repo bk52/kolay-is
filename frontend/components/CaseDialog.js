@@ -5,6 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
+import Paper from "@material-ui/core/Paper";
 import CurrencyTextField from "@unicef/material-ui-currency-textfield";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,6 +15,9 @@ import UpIcon from "@material-ui/icons/ExpandLessOutlined";
 import DownIcon from "@material-ui/icons/ExpandMoreOutlined";
 import TextField from "@material-ui/core/TextField";
 import dateFormat from "../common/datepickerFormat";
+import formatDate from "../common/formatDate";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
 
 const useStyles = makeStyles((theme) => ({
   root: { flexGrow: 1 },
@@ -30,7 +34,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MainPage() {
+const _list=[
+    {_id:"1", paymentType:1, description:"desp-a", company:"company-a", price:"10.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"2", paymentType:2, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"3", paymentType:2, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"4", paymentType:2, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"5", paymentType:2, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"6", paymentType:1, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"7", paymentType:1, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"8", paymentType:1, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"},
+    {_id:"9", paymentType:1, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"}
+]
+
+function PaymentList({list}){
+    return( 
+        <Paper>
+            <Typography variant="overline">Kasa İşlemleri</Typography>
+            <List component="nav" aria-labelledby="nested-list-subheader" style={{height:"200px", overflowY:"scroll"}}>
+            {list.map((item) => {
+             let _dt = formatDate(item.createdDate);
+            return (
+                <ListItem button>
+                    <Grid container spacing={1}>
+                        <Grid item xs={12} md={1}>{item.paymentType==1 ? <UpIcon style={{color:"#28A745"}}/>:<DownIcon style={{color:"#DC3545"}}/>}</Grid>
+                        <Grid item xs={12} md={3}>{item.description}</Grid>
+                        <Grid item xs={12} md={3}>{item.company}</Grid>
+                        <Grid item xs={12} md={2}>{item.price + " ₺"}</Grid>
+                        <Grid item xs={12} md={2}>{_dt[0] + " " + _dt[1]}</Grid>
+                    </Grid>
+                </ListItem>
+            );
+            })}
+            </List>
+        </Paper>
+    )
+}
+
+function MainPage({paymentList}) {
   const classes = useStyles();
   const [sdate,setsDate]=useState(new Date());
   const handleDateChange = (e) => {
@@ -64,7 +104,7 @@ function MainPage() {
             fullWidth
             onClick={null}
             variant="contained"
-            startIcon={<DownIcon />}
+            startIcon={<UpIcon />}
             style={{ backgroundColor: "#28A745", color: "white" }}
           >
             {" "}
@@ -77,13 +117,14 @@ function MainPage() {
             fullWidth
             onClick={null}
             variant="contained"
-            startIcon={<UpIcon />}
+            startIcon={<DownIcon />}
             style={{ backgroundColor: "#DC3545", color: "white" }}
           >
             {" "}
             Para Çıkışı
           </Button>
         </Grid>
+        <Grid item xs={12}><PaymentList list={paymentList}/></Grid>
       </Grid>
   );
 }
@@ -99,7 +140,7 @@ export default function CaseDialog({ open, onClose }) {
       disableBackdropClick={true}
     >
       <DialogTitle className={classes.title}>KASA</DialogTitle>
-      <DialogContent>{page == 0 ? <MainPage /> : ""}</DialogContent>
+      <DialogContent>{page == 0 ? <MainPage paymentList={_list}/> : ""}</DialogContent>
       <DialogActions>
         <Button
           onClick={null}
