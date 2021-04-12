@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,  forwardRef, useRef, useImperativeHandle, } from "react";
 import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -46,7 +46,7 @@ const _list=[
     {_id:"9", paymentType:1, description:"desp-b", company:"company-b", price:"15.00", createdDate:"08/04/2021 08:30:00"}
 ]
 
-function PaymentList({list}){
+const PaymentList=({list})=>{
     return( 
         <Paper>
             <Typography variant="overline">Kasa İşlemleri</Typography>
@@ -70,16 +70,14 @@ function PaymentList({list}){
     )
 }
 
-function MainPage({paymentList}) {
+const MainPage=({paymentList,onTransactionClick})=>{
   const classes = useStyles();
   const [sdate,setsDate]=useState(new Date());
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     setsDate(value)
   };
-  useEffect(() => {
-    setsDate(dateFormat(new Date()))
-  }, []);
+  useEffect(() => {setsDate(dateFormat(new Date()))}, []);
   return (
       <Grid container className={classes.root} spacing={1}>
         <Grid item xs={12}>
@@ -105,6 +103,7 @@ function MainPage({paymentList}) {
             onClick={null}
             variant="contained"
             startIcon={<UpIcon />}
+            onClick={()=>{onTransactionClick(1)}}
             style={{ backgroundColor: "#28A745", color: "white" }}
           >
             {" "}
@@ -118,6 +117,7 @@ function MainPage({paymentList}) {
             onClick={null}
             variant="contained"
             startIcon={<DownIcon />}
+            onClick={()=>{onTransactionClick(2)}}
             style={{ backgroundColor: "#DC3545", color: "white" }}
           >
             {" "}
@@ -129,30 +129,61 @@ function MainPage({paymentList}) {
   );
 }
 
-export default function CaseDialog({ open, onClose }) {
+const CaseTransaction=forwardRef((props,ref)=>{
+  const formRef = useRef();
+  const classes = useStyles();
+  const [sdate,setsDate]=useState(new Date());
+  const handleDateChange = (e) => {const { name, value } = e.target;setsDate(value)};
+  useEffect(() => {setsDate(dateFormat(new Date()))}, []);
+  useImperativeHandle(ref, () => ({
+    SavePayment() {
+      let res={};
+      if (formRef && formRef.current) {
+        let description = formRef.current["description"].value;
+        let price = formRef.current["price"].value;
+        let paymentDate=formRef.current["paymentDate"].value;
+        if(price && price.length>0){res={description,price,paymentDate}}
+      }
+      return res;
+    },
+  }));
+
+  return(
+    <form ref={formRef}>
+        <Grid container className={classes.root} spacing={1}>
+            <Grid item xs={12}><Typography variant="button">{props.transactionType==1 ? "Para Girişi" : "Para Çıkışı"}</Typography> </Grid>
+            <Grid item xs={4}><TextField label="Açıklama" name="description" id="description" fullWidth /></Grid>
+            <Grid item xs={4}><CurrencyTextField fullWidth name="price" id="price" label="Tutar" variant="standard" currencySymbol="₺" outputFormat="string" decimalPlaces={2}/></Grid>
+            <Grid item xs={4}><TextField fullWidth id="paymentDate" label="Tarih" type="date" name="paymentDate" value={sdate} onChange={handleDateChange} InputLabelProps={{ shrink: true }}/></Grid>
+        </Grid>
+    </form>
+  )
+})
+
+const CaseDialog=({ open, onClose })=>{
+  const transactionRef = useRef();
   const classes = useStyles();
   const [page, setPage] = useState(0);
+  const onTransactionClick=(page)=>{setPage(page)}
+  const saveTransaction=()=>{
+      if(transactionRef && transactionRef.current){
+        console.log(transactionRef.current.SavePayment())
+      }
+  }
+  const onPageChange=()=>{
+    if(page==0){onClose();}
+    else {setPage(0)}
+  }
   return (
-    <Dialog
-      open={open}
-      fullWidth={true}
-      maxWidth={"md"}
-      disableBackdropClick={true}
-    >
+    <Dialog open={open} fullWidth={true} maxWidth={"md"} disableBackdropClick={true}>
       <DialogTitle className={classes.title}>KASA</DialogTitle>
-      <DialogContent>{page == 0 ? <MainPage paymentList={_list}/> : ""}</DialogContent>
+      <DialogContent>{page == 0 ? <MainPage onTransactionClick={onTransactionClick} paymentList={_list}/> : <CaseTransaction ref={transactionRef} transactionType={page}/>}</DialogContent>
       <DialogActions>
+        {
+          page==0 ? null : <Button onClick={saveTransaction} variant="contained" startIcon={<SaveIcon />} color="primary">{" "}KAYDET</Button>
+        }
         <Button
-          onClick={null}
-          variant="contained"
-          startIcon={<SaveIcon />}
-          color="primary"
-        >
-          {" "}
-          KAYDET
-        </Button>
-        <Button
-          onClick={null}
+          onClick={onPageChange}
           variant="contained"
           color="secondary"
           startIcon={<CloseIcon />}
@@ -163,3 +194,5 @@ export default function CaseDialog({ open, onClose }) {
     </Dialog>
   );
 }
+
+export default CaseDialog;

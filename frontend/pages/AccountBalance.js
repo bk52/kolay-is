@@ -40,6 +40,8 @@ export default function AccountBalance(props) {
     expenseDelayed:0
   });
   const [details, setDetails]=useState({showDetails:false,customerId:""})
+  const [caseModal, setCaseModal]=useState(false);
+  const closeCaseDialog=()=>{setCaseModal(false)}
 
   useEffect(() => {
     GetPaymentStats()
@@ -132,11 +134,11 @@ export default function AccountBalance(props) {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" fullWidth>KASAYA GİT</Button>
+          <Button variant="contained" color="primary" onClick={()=>{setCaseModal(true)}} fullWidth>KASAYA GİT</Button>
         </Grid>
       </Grid>
      }
-     <CaseDialog open={true}/>
+     <CaseDialog open={caseModal} onClose={closeCaseDialog}/>
     </div>
   );
 }
