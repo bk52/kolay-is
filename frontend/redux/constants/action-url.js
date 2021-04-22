@@ -5,5 +5,6 @@ export const url={
     CUSTOMERS:"/customers",
     TOKEN:"/token",
     SEARCH:"/search",
-    PAYMENTS:"/payments"
+    PAYMENTS:"/payments",
+    PRODUCTS:"/products"
 };

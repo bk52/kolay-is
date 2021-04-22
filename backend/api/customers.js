@@ -34,6 +34,7 @@ router
       }
     } catch (err) {
       global.log(err, __filename, "e", "/customers");
+      res.status(500).json({ message: "Internal Server Error" });
     }
   })
   .post(function (req, res) {

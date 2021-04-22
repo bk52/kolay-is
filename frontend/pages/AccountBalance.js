@@ -11,7 +11,7 @@ import Fab from "@material-ui/core/Fab";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import {GetPaymentStats} from "../redux/actions/customerPaymentsApi"
 import CaseDialog from "../components/CaseDialog";
-import Dialog from "@material-ui/core/Dialog";
+import CaseActiveDialog from "../components/CaseActiveDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +41,9 @@ export default function AccountBalance(props) {
   });
   const [details, setDetails]=useState({showDetails:false,customerId:""})
   const [caseModal, setCaseModal]=useState(false);
+  const [caseActive, setCaseActive]=useState({open:false, balanceType:1});
   const closeCaseDialog=()=>{setCaseModal(false)}
+  const closeCaseActive=()=>{setCaseActive({open:false})}
 
   useEffect(() => {
     GetPaymentStats()
@@ -86,7 +88,7 @@ export default function AccountBalance(props) {
             <Typography variant="h5" gutterBottom>
               Tahsilatlar
             </Typography>
-            {activeStats.incomeSum && activeStats.incomeSum!=0 ? <CustomPieChart
+            {activeStats.incomeSum && activeStats.incomeSum!=0 ? <div style={{cursor:"pointer"}} onClick={()=>{setCaseActive({open:true, balanceType:1})}}><CustomPieChart
               width={500}
               heigth={500}
               centerText={{title: "Genel Toplam",value: activeStats.incomeSum,unit: "₺",fill: "#52b788"}}
@@ -96,8 +98,8 @@ export default function AccountBalance(props) {
                   {name: "Gecikmiş", value: activeStats.incomeDelayed, unit: "₺", color: "#DC3545"}
                 ]
               }
-            /> : "Tahsilat bilgisi bulunamadı"}
-            <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#28A745", color: "white"}}>Aktif Tahsilatları Göster</Button>
+            /></div> : "Tahsilat bilgisi bulunamadı"}
+            {/* <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#28A745", color: "white"}} onClick={()=>{setCaseActive({open:true, balanceType:1})}}>Aktif Tahsilatları Göster</Button> */}
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -105,7 +107,7 @@ export default function AccountBalance(props) {
             <Typography variant="h5" gutterBottom>
               Borçlar
             </Typography>
-            {activeStats.expenseSum && activeStats.expenseSum!=0 ? <CustomPieChart
+            {activeStats.expenseSum && activeStats.expenseSum!=0 ? <div onClick={()=>{setCaseActive({open:true, balanceType:2})}}><CustomPieChart
               width={500}
               heigth={500}
               centerText={{title: "Genel Toplam",value: activeStats.expenseSum,unit: "₺",fill: "#52b788"}}
@@ -115,11 +117,14 @@ export default function AccountBalance(props) {
                   {name: "Gecikmiş", value: activeStats.expenseDelayed, unit: "₺", color: "#DC3545"}
                 ]
               }
-            /> : "Borç bilgisi bulunamadı"}
-             <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#DC3545", color: "white"}}>Aktif Borçları Göster</Button>
+            /></div> : "Borç bilgisi bulunamadı"}
+             {/* <Button className={classes.activeButtons} variant="contained" style={{backgroundColor:"#DC3545", color: "white"}} onClick={()=>{setCaseActive({open:true, balanceType:2})}}>Aktif Borçları Göster</Button> */}
           </Paper>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={4}>
+          <Button variant="contained" color="primary" style={{height:64}} onClick={()=>{setCaseModal(true)}} fullWidth>KASAYA GİT</Button>
+        </Grid>
+        <Grid item xs={8}>
           <Paper className={classes.paper} style={{padding: "8px"}}>
             <Grid container>
               <Grid item xs={10}>
@@ -133,12 +138,10 @@ export default function AccountBalance(props) {
             </Grid>
           </Paper>
         </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={()=>{setCaseModal(true)}} fullWidth>KASAYA GİT</Button>
-        </Grid>
       </Grid>
      }
      <CaseDialog open={caseModal} onClose={closeCaseDialog}/>
+     <CaseActiveDialog open={caseActive.open} balanceType={caseActive.balanceType} onClose={closeCaseActive}/>
     </div>
   );
 }

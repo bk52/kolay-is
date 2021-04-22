@@ -34,23 +34,7 @@ function GetCustomers(){
   })
 }
 
-function FindCustomers(searchText, retry=false){
-//   return new Promise((resolve,reject)=>{
-//     api.post(url.SEARCH, { account: searchText })
-//     .then((response)=>{
-//       resolve(response)
-//     })
-//     .catch((error) => {
-//       if(retry){
-//         ErrorHandler(error); reject(error);
-//       }
-//       else{
-//         FindCustomers(searchText,true)
-//         .then((response)=>{resolve(response)})
-//         .catch((error)=>{ErrorHandler(error); reject(error);})
-//       }
-//     })
-//  })
+function FindCustomers(searchText){
   return new Promise((resolve, reject) => {
     api.post(url.SEARCH, { account: searchText })
     .then((response)=>{resolve(response)})

@@ -18,6 +18,7 @@ const customerRouter = require("./api/customers");
 const paymentRouter  =require("./api/payments");
 const tokenRouter = require("./api/token");
 const searchRouter = require("./api/search");
+const productRouter = require("./api/products");
 const logMiddleware = require("./common/middleware/reqLogger");
 const verifyMiddleware = require("./common/middleware/verifyToken");
 
@@ -37,6 +38,7 @@ db.Connect()
     app.use("/api/payments", verifyMiddleware, paymentRouter);
     app.use("/api/token", tokenRouter);
     app.use("/api/search", verifyMiddleware, searchRouter);   
+    app.use("/api/products", verifyMiddleware, productRouter);   
     app.listen(port, () => console.log("Server Ready On port " + port));
 
     // paymentDB.getActiveStatsForUser("5fd7b0dc343a357111e2c20c")

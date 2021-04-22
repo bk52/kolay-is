@@ -13,6 +13,8 @@ import AccountBalancePage from "./AccountBalance";
 import PageNF from "./NotFound";
 import ComingSoonPage from "./ComingSoon";
 import ReportPage from "./ReportPage";
+import ProductPage from "./ProductPage";
+import OrderPage from "./OrderPage";
 
 const useStyles = makeStyles((theme) => ({
   router: {
@@ -72,6 +74,12 @@ export default function AppRouter() {
             </PrivateRoute>
             <PrivateRoute path="/reports">
               <ReportPage />
+            </PrivateRoute>
+            <PrivateRoute path="/products">
+              <ProductPage />
+            </PrivateRoute>
+            <PrivateRoute path="/orders">
+              <OrderPage />
             </PrivateRoute>
             <Route path="*">
               <PageNF />

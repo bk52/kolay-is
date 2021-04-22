@@ -17,6 +17,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import ListIcon from "@material-ui/icons/List";
 import BarChartIcon from "@material-ui/icons/BarChart";
+import GroupOutlinedIcon from '@material-ui/icons/GroupOutlined';
 
 const drawerWidth = 200;
 const drawerTop = 64;
@@ -45,11 +46,11 @@ const useStyles = makeStyles((theme) => ({
 
 const MenuItems = [
   { key: 1, icon: <HomeOutlinedIcon />, title: lang.Menu_Anasayfa, url: "/coming/Anasayfa" },
-  { key: 2, icon: <WorkOutlineIcon />, title: lang.Menu_İşler, url: "/coming/İşler" },
-  { key: 3, icon: <ArrowForwardIcon />, title: lang.Menu_Müsteriler, url: "/customers" },
-  { key: 4, icon: <ArrowBackIcon />, title: lang.Menu_Tedarikciler, url: "/coming/Tedarikçiler" },
+  { key: 2, icon: <WorkOutlineIcon />, title: lang.Menu_İşler, url: "/orders" },
+  { key: 3, icon: <GroupOutlinedIcon />, title: lang.Menu_Müsteriler, url: "/customers" },
+  // { key: 4, icon: <ArrowBackIcon />, title: lang.Menu_Tedarikciler, url: "/coming/Tedarikçiler" },
   { key: 5, icon: <AttachMoneyIcon />, title: lang.Menu_Ödemeler, url: "/accountBalance" },
-  { key: 6, icon: <ListIcon />, title: lang.Menu_Ürünler, url: "/coming/Ürünler" },
+  { key: 6, icon: <ListIcon />, title: lang.Menu_Ürünler, url: "/products" },
   { key: 7, icon: <BarChartIcon />, title: lang.Menu_Raporlar, url: "/reports" },
 ];
 

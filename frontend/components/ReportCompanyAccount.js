@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import DateRange from "./DateRange";
 import Button from "@material-ui/core/Button";
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
+import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
 import AutoComplete from "../components/AutoComplete";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -26,7 +26,7 @@ export default function ReportCompanyAccount({title, onNewReport}) {
   return (
     <div>
       <Typography variant="h5">
-        <AccountBalanceIcon /> {title}
+        <AccountBalanceWalletOutlinedIcon /> {title}
       </Typography>
       <hr />
       <DateRange ref={datePickerRef} />
