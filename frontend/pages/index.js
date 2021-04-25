@@ -58,7 +58,7 @@ export default function AppRouter() {
         <div className={leftMenuOpen ? classes.routerWithMenu : classes.router}>
           <Switch>
             <Route exact path="/">
-              <Login />
+               <Login /> 
             </Route>
             <Route path="/login">
               <Login />

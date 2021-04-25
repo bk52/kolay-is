@@ -3,11 +3,15 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-import Rating from "@material-ui/lab/Rating";
 import Grid from "@material-ui/core/Grid";
 import {FindCustomers} from "../redux/actions/customersApi";
 
 let prevSearchText = "";
+
+const TestOptions=[
+  {_id:"1", productName:"Kaşe", productUnit:"Adet",unitPrice:40},
+  {_id:"2", productName:"Fatura", productUnit:"Cilt",unitPrice:80},
+]
 
 export default function AutoBox({selectedChanged}) {
     const [loading, setLoading] = React.useState(false);
@@ -24,16 +28,17 @@ export default function AutoBox({selectedChanged}) {
               prevSearchText = searchText;
               setLoading(true);
 
-              FindCustomers(searchText)
-              .then((response)=>{
-                if(response.data && response.data.result)
-                  setOptions(response.data.result);
-                setLoading(false);
-              })
-              .catch((err)=>{
-                  setoptionText("API Error");
-                  setLoading(false);
-              })
+              setOptions(TestOptions); setLoading(false);
+              // FindCustomers(searchText)
+              // .then((response)=>{
+              //   if(response.data && response.data.result)
+              //     setOptions(response.data.result);
+              //   setLoading(false);
+              // })
+              // .catch((err)=>{
+              //     setoptionText("API Error");
+              //     setLoading(false);
+              // })
             }      
         }
         else if(searchText==""){
@@ -46,13 +51,13 @@ export default function AutoBox({selectedChanged}) {
       id="combo-box-demo"
       options={options}
       noOptionsText={optionText}
-      getOptionLabel={(option) => option.fullName}
+      getOptionLabel={(option) => option.productName}
       style={{ width: "100%" }}
       onChange={(event, newValue) => {selectedChanged(newValue);}}
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Müşterilerde Ara"
+          label="Ürünlerde Ara"
           InputProps={{
             ...params.InputProps,
             endAdornment: (
@@ -71,11 +76,7 @@ export default function AutoBox({selectedChanged}) {
       renderOption={(option) => (
         <React.Fragment>
              <Grid container spacing={1}>
-               <Grid container xs={12}><Typography>{option.fullName}</Typography></Grid>
-                <Grid container>
-                  <Grid item xs={12} md={8}><Typography color="textSecondary" style={{fontSize:"12px"}}>{option.ownerName}</Typography></Grid>
-                  <Grid item xs={12} md={4} style={{textAlign:"right"}}><Rating name="read-only" value={option.rate} readOnly /></Grid>
-                </Grid>
+               <Grid container xs={12}><Typography>{option.productName}</Typography></Grid>
              </Grid>
         </React.Fragment>
       )}
