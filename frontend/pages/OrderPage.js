@@ -1,203 +1,101 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import IconButton from "@material-ui/core/IconButton";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Table from "../components/SimpleTable";
+import React, { useState, useEffect} from "react";
 import { useConfirm } from "material-ui-confirm";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
 import OrderSearch from "../components/CustomerHeader";
 import AddIcon from "@material-ui/icons/Add";
-import {
-  GetProducts,
-  GetProduct,
-  SetProduct,
-  DeleteProduct,
-} from "../redux/actions/productsApi";
-import dateFormat from "../common/formatDate";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import Grid from "@material-ui/core/Grid";
-import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
-import CommentOutlinedIcon from "@material-ui/icons/CommentOutlined";
-import TextField from "@material-ui/core/TextField";
-import CurrencyTextField from "@unicef/material-ui-currency-textfield";
 import Button from "@material-ui/core/Button";
-import Chip from "@material-ui/core/Chip";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Toast from "../components/Snackbar";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
-import Paper from "@material-ui/core/Paper";
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
-const OrderStatusCell = ({ value }) => {
-  let res = null;
-  if (value == 0) {
-    res = <Chip label="Sipariş Alındı" />;
-  } else if (value == 20) {
-    res = <Chip color="primary" label="Baskıda" />;
-  } else if (value == 100) {
-    res = (
-      <Chip
-        style={{ backgroundColor: "#28A745", color: "white" }}
-        label="Hazır"
-      />
-    );
-  }
-  return res;
-};
-
-const OrderTable = ({ filterText, tableData, onRowEdit, onRowDelete }) => {
-  const tableInstance = useRef(null);
-  const Edit = (value) => {
-    onRowEdit(value);
-  };
-  const Delete = (value) => {
-    onRowDelete(value);
-  };
-  if (tableInstance && tableInstance.current) {
-    tableInstance.current.setGlobalFilter(filterText);
-  }
-  const columns = useMemo(
-    () => [
-      {
-        Header: "",
-        accessor: "_id",
-        Cell: (props) => {
-          return (
-            <div style={{ display: "inline-flex" }}>
-              <IconButton
-                size="small"
-                aria-label="edit"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  Edit(props.value);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                size="small"
-                aria-label="delete"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  Delete(props.value);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </div>
-          );
-        },
-        disableSortBy: true,
-      },
-      {
-        Header: "Müşteri",
-        accessor: "customerName",
-        disableSortBy: true,
-      },
-      {
-        Header: "Telefon",
-        accessor: "phone",
-        disableSortBy: true,
-      },
-      {
-        Header: "Siparişler",
-        accessor: "order",
-        disableSortBy: true,
-        //   Cell: (props) => { return (<div>{props.value + " ₺"}</div>);},
-      },
-      {
-        Header: "Acil",
-        accessor: "immediate",
-        disableSortBy: true,
-        Cell: (props) => {
-          return (
-            <div>
-              {props.value ? (
-                <PriorityHighIcon style={{ color: "red" }} />
-              ) : null}
-            </div>
-          );
-        },
-      },
-      {
-        Header: "Durum",
-        accessor: "orderStatus",
-        disableSortBy: true,
-        Cell: OrderStatusCell,
-      },
-      {
-        Header: "Sipariş Notu",
-        accessor: "orderNote",
-        disableSortBy: true,
-        Cell: (props) => {
-          return <div>{props.value ? <CommentOutlinedIcon /> : null}</div>;
-        },
-      },
-      {
-        Header: "Oluşturma Tarihi",
-        accessor: "createdDate",
-        disableSortBy: true,
-        Cell: (props) => {
-          let dateArr = dateFormat(props.value);
-          return <div>{dateArr[0] + " " + dateArr[1]}</div>;
-        },
-      },
-      {
-        Header: "Teslim Tarihi",
-        accessor: "deliveryDate",
-        disableSortBy: true,
-        Cell: (props) => {
-          let dateArr = dateFormat(props.value);
-          return <div>{dateArr[0] + " " + dateArr[1]}</div>;
-        },
-      },
-    ],
-    []
-  );
-  return (
-    <div>
-      <CssBaseline />
-      <Table columns={columns} data={tableData} ref={tableInstance} />
-    </div>
-  );
-};
+import OrderModalInfo from "../components/OrderModalInfo";
+import OrderModalCustomer from "../components/OrderModalCustomer";
+import OrderModalDetails from "../components/OrderModalDetails";
+import OrderTable from "../components/OrderTable";
 
 const NewOrderModal = ({ handleClose, onOrderSave }) => {
   const [page, setPage] = useState(0);
-  useEffect(() => {}, []);
+  const handleNext = () => {
+    setPage((prevActiveStep) => prevActiveStep + 1);
+  };
+  const handleBack = () => {setPage((prevActiveStep) => prevActiveStep - 1);};
+  const [orderForm, setOrderForm]=useState({orderList:[], orderStats:{net:0, tax:0, total:0, discount:0}});
+  const onValueChanged=(name,value)=>{setOrderForm((prevState) => ({...prevState,[name]: value,}));}
+  const discountChanged=(e)=>{
+    const {value}=e.target;
+    if(value && value!==""){
+       let orderStats=orderForm.orderStats;
+       let net=orderStats.total+orderStats.tax-value;
+       let stats={...orderStats, net:net, discount:value};
+       onValueChanged("orderStats",stats);
+    }  
+  }
+  const UpdateStats =()=>{
+    let orderList=orderForm.orderList;
+    let orderStats=orderForm.orderStats;
+    let total=0,tax=0,net=0;
+    for(let i=0;i<orderList.length;i++){total+=orderList[i].totalPrice}
+    tax=total*0.18;
+    net=total+tax-orderStats.discount;
+    let stats={total,net,tax, discount:orderStats.discount};
+    onValueChanged("orderStats",stats);
+  }
+  const AddProductList=(order)=>{
+    delete order["_id"];
+    let orderList=orderForm.orderList, newIndex=0;
+    if(orderList && orderList.length>0){
+      orderList.sort((a,b) => (a.index > b.index) ? -1 : ((b.index > a.index) ? 1 : 0));
+      newIndex=orderList[0].index+1
+    }
+    order.index=newIndex;
+    orderList.push(order);
+    onValueChanged("orderList",orderList);
+  }
+  useEffect(()=>{UpdateStats();},[orderForm.orderList.length])
+  const RemoveProductList=(index)=>{
+    let orderList=orderForm.orderList;
+    for(let i=0;i<orderList.length;i++){
+      if(orderList[i].index==index){
+        orderList.splice(i,1);
+        break;
+      }
+    }
+    onValueChanged("orderList",orderList);
+  }
+  useEffect(() => { 
+    let _deliveryDate = new Date();
+    _deliveryDate.setDate(_deliveryDate.getDate() + 7);
+    onValueChanged("deliveryDate",_deliveryDate);
+  }, []);
   return (
-    <Dialog
-      open={true}
-      onClose={handleClose}
-      fullWidth={true}
-      maxWidth={"md"}
-      disableBackdropClick={true}
-    >
+    <Dialog open={true} onClose={handleClose} fullWidth={true} maxWidth={"md"} disableBackdropClick={true}>
+      <DialogTitle>Yeni Sipariş</DialogTitle>
       <DialogContent>
         <Stepper activeStep={page} alternativeLabel>
           <Step key="ordersInfo"><StepLabel>Sipariş Bilgisi</StepLabel></Step>
           <Step key="customerInfo"><StepLabel>Müşteri Bilgisi</StepLabel></Step>
-          <Step key="summary"><StepLabel>Özet</StepLabel></Step>
+          <Step key="details"><StepLabel>Sipariş Detayları</StepLabel></Step>
         </Stepper>
-         {page==0 && <div>
-            <Grid container spacing={1}>
-                <Grid item xs={12} md={4}>
-                    <Paper>
-                        
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={8}></Grid>
-            </Grid>    
-         </div>}
-         {page==1 && <div>Customer Info</div>}
-         {page==2 && <div>Summary</div>}
+        {page == 0 && <OrderModalInfo discountChanged={discountChanged} orderStats={orderForm.orderStats} orderList={orderForm.orderList} addOrder={AddProductList} removeOrder={RemoveProductList}/>}
+        {page == 1 && <OrderModalCustomer/>}
+        {page == 2 && <OrderModalDetails order={orderForm}/>}
       </DialogContent>
+      <DialogActions>
+        <Grid container spacing={1} style={{ paddingRight: 14 }}>
+          <Grid item xs={2}><Button disabled={page == 0} onClick={handleBack} color="primary"><ArrowBackIosIcon />{" "}</Button><Button disabled={page == 2} onClick={handleNext} color="primary"><ArrowForwardIosIcon /></Button></Grid>
+          <Grid item xs={8}></Grid>
+          <Grid item xs={2} style={{ textAlign: "right" }}> <Button onClick={null} variant="contained" color="secondary" startIcon={<CloseIcon />}>İPTAL</Button></Grid>
+        </Grid>
+      </DialogActions>
     </Dialog>
   );
 };
@@ -206,13 +104,13 @@ const OrderPage = () => {
   const confirm = useConfirm();
   const [filterText, setfilterText] = useState("");
   const [apiData, setData] = useState([]);
-  const [newModal, setNewModal] = useState(false);
+  const [newModal, setNewModal] = useState(true);
   const [ready, setReady] = useState(true);
-  const fillTable = () => {};
+  const fillTable = () => { };
   const addNew = () => {
     setNewModal(true);
   };
-  const onRowEdit = (_id) => {};
+  const onRowEdit = (_id) => { };
   const onRowDelete = (_id) => {
     confirm({
       title: "Kaydı Sil",
@@ -220,8 +118,8 @@ const OrderPage = () => {
       confirmationText: "Tamam",
       cancellationText: "İptal",
     })
-      .then(() => {})
-      .catch(() => {});
+      .then(() => { })
+      .catch(() => { });
   };
   const onOrderSave = (success) => {
     if (success) {

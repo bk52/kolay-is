@@ -52,7 +52,7 @@ export default function AutoBox({selectedChanged}) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Hesap Defterinde Ara"
+          label="Müşterilerde Ara"
           InputProps={{
             ...params.InputProps,
             endAdornment: (
