@@ -60,7 +60,6 @@ const NewOrderModal = ({ handleClose, onOrderSave }) => {
     orderList.push(order);
     onValueChanged("orderList",orderList);
   }
-  useEffect(()=>{UpdateStats();},[orderForm.orderList.length])
   const RemoveProductList=(index)=>{
     let orderList=orderForm.orderList;
     for(let i=0;i<orderList.length;i++){
@@ -76,6 +75,7 @@ const NewOrderModal = ({ handleClose, onOrderSave }) => {
     _deliveryDate.setDate(_deliveryDate.getDate() + 7);
     onValueChanged("deliveryDate",_deliveryDate);
   }, []);
+  useEffect(()=>{UpdateStats();},[orderForm.orderList.length])
   return (
     <Dialog open={true} onClose={handleClose} fullWidth={true} maxWidth={"md"} disableBackdropClick={true}>
       <DialogTitle>Yeni Sipariş</DialogTitle>
@@ -107,9 +107,7 @@ const OrderPage = () => {
   const [newModal, setNewModal] = useState(true);
   const [ready, setReady] = useState(true);
   const fillTable = () => { };
-  const addNew = () => {
-    setNewModal(true);
-  };
+  const addNew = () => {setNewModal(true);};
   const onRowEdit = (_id) => { };
   const onRowDelete = (_id) => {
     confirm({
