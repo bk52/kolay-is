@@ -28,7 +28,14 @@ const NewOrderModal = ({ handleClose, onOrderSave }) => {
     setPage((prevActiveStep) => prevActiveStep + 1);
   };
   const handleBack = () => {setPage((prevActiveStep) => prevActiveStep - 1);};
-  const [orderForm, setOrderForm]=useState({orderList:[], orderStats:{net:0, tax:0, total:0, discount:0}});
+  const [orderForm, setOrderForm]=useState({
+    orderList:[], 
+    orderStats:{net:0, tax:0, total:0, discount:0},
+    customer:{_id:"",fullName:""},
+    note:"",
+    prepayment:0,
+    urgent:false
+  });
   const onValueChanged=(name,value)=>{setOrderForm((prevState) => ({...prevState,[name]: value,}));}
   const discountChanged=(e)=>{
     const {value}=e.target;
@@ -76,6 +83,15 @@ const NewOrderModal = ({ handleClose, onOrderSave }) => {
     onValueChanged("deliveryDate",_deliveryDate);
   }, []);
   useEffect(()=>{UpdateStats();},[orderForm.orderList.length])
+  const SaveOrder=()=>{
+    if(orderForm.customer._id==""){
+      Toast.warning("Müşteri Seçiniz"); return;
+    }
+    if(orderForm.orderList.length==0){
+      Toast.warning("Ürün Seçiniz"); return;
+    }
+
+  }
   return (
     <Dialog open={true} onClose={handleClose} fullWidth={true} maxWidth={"md"} disableBackdropClick={true}>
       <DialogTitle>Yeni Sipariş</DialogTitle>
@@ -86,8 +102,8 @@ const NewOrderModal = ({ handleClose, onOrderSave }) => {
           <Step key="details"><StepLabel>Sipariş Detayları</StepLabel></Step>
         </Stepper>
         {page == 0 && <OrderModalInfo discountChanged={discountChanged} orderStats={orderForm.orderStats} orderList={orderForm.orderList} addOrder={AddProductList} removeOrder={RemoveProductList}/>}
-        {page == 1 && <OrderModalCustomer/>}
-        {page == 2 && <OrderModalDetails order={orderForm}/>}
+        {page == 1 && <OrderModalCustomer onValueChanged={onValueChanged}/>}
+        {page == 2 && <OrderModalDetails order={orderForm} onValueChanged={onValueChanged} SaveOrder={SaveOrder}/>}
       </DialogContent>
       <DialogActions>
         <Grid container spacing={1} style={{ paddingRight: 14 }}>

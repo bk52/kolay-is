@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
-const connectionString="mongodb://localhost:27017/kolayis"
+const username=process.env.DB_USERNAME;
+const password=process.env.DB_PASSWORD;
+const dbname=process.env.DB_NAME;
+const connectionString="mongodb+srv://"+username+":"+password+"@cluster0.qmtm0.mongodb.net/"+dbname+"?retryWrites=true&w=majority"
 
 mongoose.connection.on('error', err => {
     global.log(err,__filename,'e');
