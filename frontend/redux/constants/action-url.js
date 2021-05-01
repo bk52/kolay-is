@@ -6,5 +6,6 @@ export const url={
     TOKEN:"/token",
     SEARCH:"/search",
     PAYMENTS:"/payments",
-    PRODUCTS:"/products"
+    PRODUCTS:"/products",
+    ORDERS:"/orders"
 };

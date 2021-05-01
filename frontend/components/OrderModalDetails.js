@@ -10,7 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 const OrderDetails=({order, onValueChanged,SaveOrder})=>{
     return(
         <Grid container spacing={1}>
-        <Grid item xs={6}><TextField disabled id="fullName" name="fullName" label="Müşteri" fullWidth value={order.customer.customerName}/></Grid>
+        <Grid item xs={6}><TextField disabled id="fullName" name="fullName" label="Müşteri" fullWidth value={order.customer.fullName}/></Grid>
         <Grid item xs={6}><CurrencyTextField disabled label="Toplam Fiyat" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={order.orderStats.net} /></Grid>
         <Grid item xs={12}><TextField id="notes" name="notes" label="Sipariş Notu" value={order.note} onChange={(e)=>{onValueChanged("note",e.target.value)}} fullWidth/></Grid>
         <Grid item xs={4}>

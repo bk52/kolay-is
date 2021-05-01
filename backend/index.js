@@ -19,10 +19,11 @@ const paymentRouter  =require("./api/payments");
 const tokenRouter = require("./api/token");
 const searchRouter = require("./api/search");
 const productRouter = require("./api/products");
+const orderRouter=require("./api/orders");
 const logMiddleware = require("./common/middleware/reqLogger");
 const verifyMiddleware = require("./common/middleware/verifyToken");
 
- const paymentDB = require("./db/models/customerPayments");
+ const orderDB = require("./db/models/orders");
 
 db.Connect()
   .then((res) => {
@@ -39,11 +40,12 @@ db.Connect()
     app.use("/api/token", tokenRouter);
     app.use("/api/search", verifyMiddleware, searchRouter);   
     app.use("/api/products", verifyMiddleware, productRouter);   
+    app.use("/api/orders", verifyMiddleware, orderRouter);
     app.listen(port, () => console.log("Server Ready On port " + port));
 
-    // paymentDB.getActiveStatsForUser("5fd7b0dc343a357111e2c20c")
-    //  .then((res)=>{console.log(JSON.stringify(res,null,4))})
-    //  .catch((err)=>{console.log(err)})
+    // orderDB.getOrders()
+    // .then(data=>console.log(data))
+    // .catch(err=>console.log(err))
 
   })
   .catch((err) => {
