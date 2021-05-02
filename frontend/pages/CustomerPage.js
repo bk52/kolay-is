@@ -7,6 +7,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import { GetCustomers } from "../redux/actions/customersApi";
 import {types} from "../redux/constants/action-types";
 import AddIcon from "@material-ui/icons/Add";
+import Paper from "@material-ui/core/Paper";
 
 export default function CustomerPage() {
   const customerState = useSelector((state) => state.customer);
@@ -41,8 +42,8 @@ export default function CustomerPage() {
         <LinearProgress />
       ) : (
         <div>
-          <CustomerSearch textChanged={textChanged} buttonClick={addNew} textLabel={"Müşterilerde Ara"}buttonIcon={<AddIcon />}buttonTooltip={"Yeni Kullanıcı"} />
-          <CustomerTable filterText={filterText} tableData={apiData} />
+          <Paper style={{marginBottom:8}}><CustomerSearch textChanged={textChanged} buttonClick={addNew} textLabel={"Müşterilerde Ara"}buttonIcon={<AddIcon />}buttonTooltip={"Yeni Kullanıcı"} /></Paper>
+          <Paper><CustomerTable filterText={filterText} tableData={apiData} /></Paper>
           <CustomerDialog open={customerState.openModal} loading={customerState.customerFormLoading}></CustomerDialog>
         </div>
       )}

@@ -26,7 +26,7 @@ import CurrencyTextField from "@unicef/material-ui-currency-textfield";
 import Button from "@material-ui/core/Button";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Toast from "../components/Snackbar";
-
+import Paper from "@material-ui/core/Paper";
 const ProductTable=({filterText, tableData, onRowEdit, onRowDelete})=>{
     const tableInstance = useRef(null);
     const Edit = (value) => {onRowEdit(value)};
@@ -209,8 +209,8 @@ const ProductPage = () => {
         <div>
             {
                 ready ? <div>
-                    <ProductSearch textChanged={textChanged} buttonClick={addNew} textLabel={"Ürünlerde Ara"} buttonIcon={<AddIcon />}buttonTooltip={"Yeni Ürün"} />
-                    <ProductTable filterText={filterText} tableData={apiData} onRowEdit={onRowEdit} onRowDelete={onRowDelete}/>
+                    <Paper style={{marginBottom:8}}><ProductSearch textChanged={textChanged} buttonClick={addNew} textLabel={"Ürünlerde Ara"} buttonIcon={<AddIcon />}buttonTooltip={"Yeni Ürün"} /></Paper>
+                    <Paper><ProductTable filterText={filterText} tableData={apiData} onRowEdit={onRowEdit} onRowDelete={onRowDelete}/></Paper>
                     {productModal.open ? <ProductModal open={true} _id={productModal._id} handleClose={closeModal} onRowSave={onRowSave}></ProductModal> : null}
                 </div> :  <LinearProgress/>
             }

@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from "react";
 import IconButton from "@material-ui/core/IconButton";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Table from "./SimpleTable";
+import CTable from "./SimpleCollapsibleTable";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import dateFormat from "../common/formatDate";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
@@ -25,7 +26,7 @@ const OrderStatusCell = ({ value }) => {
 const OrderListCell = ({ value }) => {
   let res = null;
   if(value && value.length>0){
-    return <Paper><Grid container spacing={1}>
+    return <Paper><Grid container spacing={1} style={{ marginTop: 5, marginBottom: 5, paddingLeft: 5}}>
       {
           value.map(item=>{
             return <React.Fragment>
@@ -85,7 +86,15 @@ const OrderTable = ({ filterText, tableData, onShowDetails }) => {
         accessor: "orderList",
         disableSortBy: true,
         width: 300,
-        Cell: OrderListCell,
+        collapsible:true,
+        subTable:[
+          {title:"", field:"_id", key:true},
+          {title:"Ürün", field:"productName"},
+          {title:"Adet", field:"orderCount"},
+          {title:"Birim", field:"productUnit"},
+          {title:"Birim Fiyat", field:"unitPrice", type:"Decimal"},
+          {title:"Toplam Fiyat", field:"totalPrice", type:"Decimal"},
+        ]
       },
       {
         Header: "Acil",
@@ -132,7 +141,8 @@ const OrderTable = ({ filterText, tableData, onShowDetails }) => {
   return (
     <div>
       <CssBaseline />
-      <Table columns={columns} data={tableData} ref={tableInstance} />
+      {/* <Table columns={columns} data={tableData} ref={tableInstance} /> */}
+      <CTable columns={columns} data={tableData} ref={tableInstance}/>
     </div>
   );
 };
