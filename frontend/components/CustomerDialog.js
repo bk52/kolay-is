@@ -4,46 +4,16 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 import { makeStyles } from "@material-ui/core/styles";
 import SaveIcon from "@material-ui/icons/Save";
 import CloseIcon from "@material-ui/icons/Close";
 import { types } from "../redux/constants/action-types";
-import Tabs from "./Tabs";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import CustomerInfo from "./CustomerInfo";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import WorkIcon from "@material-ui/icons/Work";
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 
-const tabList = [
-  {
-    index: 0,
-    title: "GENEL BİLGİLER",
-    icon: <AccountBoxIcon />,
-    component: <CustomerInfo ref={null}/>,
-  },
-  {
-    index: 1,
-    title: "SİPARİŞLER",
-    icon: <WorkIcon />,
-    component: <div>Siparişler</div>,
-  },
-  {
-    index: 2,
-    title: "HESAP ÖZETİ",
-    icon: <AccountBalanceIcon />,
-    component: <div>Hesap Özeti</div>,
-  },
-]
-
-const useStyles = makeStyles((theme) => ({
-  modal: {
-    padding: theme.spacing(0),
-  },
-}));
 
 export default function CustomerDialog(props) {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const customerTabsRef = useRef();
   const [showSave, setshowSave] = useState(true);
@@ -51,16 +21,12 @@ export default function CustomerDialog(props) {
     dispatch({ type: types.CUSTOMER_MODAL_CLOSE, payload: {} });
   };
   const saveForm = () => {
-
     if (customerTabsRef) {
-      customerTabsRef.current.saveCustomerForm();
+      customerTabsRef.current.saveForm();
     }
   };
-  const isFirstTab = (val) => {
-    setshowSave(val);
-  };
   return (
-    <div>
+    <React.Fragment>
       <Dialog
         open={props.open}
         onClose={handleClose}
@@ -71,10 +37,13 @@ export default function CustomerDialog(props) {
         {props.loading ? (
           <LinearProgress />
         ) : (
-          <div>
-            <DialogTitle className={classes.modal} id="alert-dialog-title">
-              <Tabs ref={customerTabsRef} isFirstTab={isFirstTab} tabList={tabList}></Tabs>
+          <React.Fragment>
+            <DialogTitle>
+              Müşteri Bilgileri
             </DialogTitle>
+            <DialogContent>
+               <CustomerInfo ref={customerTabsRef}/>
+            </DialogContent>
             <DialogActions>
               {showSave ? (
                 <Button
@@ -97,9 +66,9 @@ export default function CustomerDialog(props) {
                 İPTAL
               </Button>
             </DialogActions>
-          </div>
+          </React.Fragment>
         )}
       </Dialog>
-    </div>
+    </React.Fragment>
   );
 }

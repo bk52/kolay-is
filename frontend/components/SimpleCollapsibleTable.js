@@ -19,6 +19,15 @@ import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+const Convert2Dec=(val)=>{
+  let res="";
+  try{
+    res=parseFloat(val["$numberDecimal"]).toFixed(2);
+  }
+  catch(e){}
+  return res;
+}
+
 const useRowStyles = makeStyles({
   root: {
     '& > *': {
@@ -59,74 +68,81 @@ function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  let collapsibleCell=row.cells.filter((cell)=>cell.column.collapsible);
-  let keyField=null;
-  if(collapsibleCell && collapsibleCell.length>0)
-  { 
-    collapsibleCell=collapsibleCell[0];
-    keyField=collapsibleCell.column.subTable.filter((cell)=>cell.key)
-    keyField=keyField.length>0 ? keyField[0].field: keyField;
+  let collapsibleCell = row.cells.filter((cell) => cell.column.collapsible);
+  let sumCell= row.cells.filter((cell) => cell.column.tableSum);
+  let keyField = null;
+  let subSpanLength=0;
+  if (collapsibleCell && collapsibleCell.length > 0) {
+    collapsibleCell = collapsibleCell[0];
+    keyField = collapsibleCell.column.subTable.filter((cell) => cell.key)
+    keyField = keyField.length > 0 ? keyField[0].field : keyField;
   }
-  const aaa="unitPrice.$numberDecimal";
-  const spanLength=row.cells.length;
+  else{collapsibleCell=null;}
+  const spanLength = row.cells.length;
+  if(sumCell && sumCell.length>0){
+    sumCell=sumCell[0];
+    try{subSpanLength=spanLength-sumCell.column.subTable.length-1;}
+    catch(e){}
+  }
+  else{sumCell=null;}
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
-        <TableCell style={{width:50}}>
+        <TableCell style={{ width: 50 }}>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
         {row.cells.map((cell) => {
           return (
-            !cell.column.collapsible && <TableCell {...cell.getCellProps()} style={{ padding: "0px", paddingLeft: "16px", width: cell.column.width }}>
+            !(cell.column.collapsible || cell.column.tableSum) && <TableCell {...cell.getCellProps()} style={{ padding: "0px", paddingLeft: "16px", width: cell.column.width }}>
               {cell.render("Cell")}
-            </TableCell> 
+            </TableCell>
           );
         })}
       </TableRow>
-       <TableRow>
+      <TableRow>
         {collapsibleCell && <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={spanLength}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
+            <Box margin={1} style={{ backgroundColor: "#FAFAFA" }}>
+              <Typography variant="h6" gutterBottom component="div" style={{ paddingLeft: 8 }}>
                 {collapsibleCell.column.Header}
               </Typography>
-              <MaUTable size="small" stickyHeader>
+              <MaUTable size="small">
                 <TableHead>
                   <TableRow>
-                      {collapsibleCell.column.subTable.map((item)=> !item.key && <TableCell>{item.title}</TableCell>)}
+                    {collapsibleCell.column.subTable.map((item) => !item.key ? item.type === "Decimal" ? <TableCell align="right">{item.title}</TableCell> : <TableCell>{item.title}</TableCell> : null)}
                   </TableRow>
                 </TableHead>
-                 <TableBody>
-                    {
-                      collapsibleCell.value.map((subData)=>(
-                        <TableRow key={subData[`${keyField}`]}>
-                           {collapsibleCell.column.subTable.map((item)=>{
-                             return !item.key ? item.type==="Decimal" ? <TableCell>{subData[`${item.field}`]["$numberDecimal"]}</TableCell> : <TableCell>{subData[`${item.field}`]}</TableCell> : null
-                           })} 
+                <TableBody>
+                  {
+                    collapsibleCell.value.map((subData) => (
+                      <TableRow key={subData[`${keyField}`]}>
+                        {collapsibleCell.column.subTable.map((item) => {
+                          return !item.key ? item.type === "Decimal" ? <TableCell align="right">{Convert2Dec(subData[`${item.field}`])}</TableCell> : <TableCell>{subData[`${item.field}`]}</TableCell> : null
+                        })}
+                      </TableRow>
+                    ))
+                  }
+                  {
+                    sumCell && sumCell.column.subTable.map((item,i)=>(
+                      i==0 ? <TableRow> 
+                        <TableCell rowSpan={sumCell.column.subTable.length} colSpan={subSpanLength}/>
+                        <TableCell>{item.title}</TableCell>
+                        <TableCell align="right">{item.type=="Decimal" ? Convert2Dec(sumCell.value[item.field]): sumCell.value[item.field]}</TableCell>
+                        </TableRow> 
+                        : <TableRow>
+                        <TableCell>{item.title}</TableCell>
+                          <TableCell align="right">{item.type=="Decimal" ? Convert2Dec(sumCell.value[item.field]): sumCell.value[item.field]}</TableCell>
                         </TableRow>
-                      ))
-                    }
-    
-                  {/* {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))} */}
-                </TableBody> 
+                    ))
+                  }
+                </TableBody>
               </MaUTable>
             </Box>
           </Collapse>
         </TableCell>}
-      </TableRow> 
+      </TableRow>
     </React.Fragment>
   );
 }
@@ -173,9 +189,9 @@ const Table = React.forwardRef(({ columns, data }, ref) => {
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
-                 <StyledTableCell style={{width:50}}/>
+                <StyledTableCell style={{ width: 50 }} />
                 {headerGroup.headers.map((column) => (
-                   !column.collapsible && <StyledTableCell  {...column.getHeaderProps(column.getSortByToggleProps())} style={{ padding: "0px", paddingLeft: "16px", width: column.width }}>
+                  !(column.collapsible || column.tableSum) && <StyledTableCell  {...column.getHeaderProps(column.getSortByToggleProps())} style={{ padding: "0px", paddingLeft: "16px", width: column.width }}>
                     {column.render("Header")}
                     {column.id !== 'selection' ? (
                       <TableSortLabel
@@ -193,15 +209,6 @@ const Table = React.forwardRef(({ columns, data }, ref) => {
             {page.map((row, i) => {
               prepareRow(row);
               return (
-                // <TableRow {...row.getRowProps()}>
-                //   {row.cells.map((cell) => {
-                //     return (
-                //       <TableCell {...cell.getCellProps()} style={{padding:"0px", paddingLeft:"16px", width:cell.column.width}}>
-                //         {cell.render("Cell")}
-                //       </TableCell>
-                //     );
-                //   })}
-                // </TableRow>
                 <Row key={i} row={row} />
               );
             })}

@@ -73,7 +73,7 @@ export default function PersistentDrawerLeft(props) {
       >
         <List>
           {MenuItems.map((item) => (
-            <ListItem button component={Link} to={item.url}>
+            <ListItem key={item.key} button component={Link} to={item.url}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.title} />
             </ListItem>

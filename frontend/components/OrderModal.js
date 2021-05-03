@@ -27,31 +27,39 @@ const OrderModal = ({ handleClose }) => {
     const handleBack = () => { setPage((prevActiveStep) => prevActiveStep - 1); };
     const [orderForm, setOrderForm] = useState({
         orderList: [],
-        orderStats: { net: 0, tax: 0, total: 0, discount: 0 },
+        orderBalance: { net: 0, tax: 0, total: 0, discount: 0, prepayment:0 },
         customer: { _id: "", fullName: "" },
         note: "",
-        prepayment: 0,
         urgent: false
     });
     const onValueChanged = (name, value) => { setOrderForm((prevState) => ({ ...prevState, [name]: value, })); }
     const discountChanged = (e) => {
         const { value } = e.target;
         if (value && value !== "") {
-            let orderStats = orderForm.orderStats;
-            let net = orderStats.total + orderStats.tax - value;
-            let stats = { ...orderStats, net: net, discount: value };
-            onValueChanged("orderStats", stats);
+            let orderBalance = orderForm.orderBalance;
+            let net = orderBalance.total + orderBalance.tax - value - orderBalance.prepayment;
+            let stats = { ...orderBalance, net: net, discount: value };
+            onValueChanged("orderBalance", stats);
+        }
+    }
+    const prepaymentChanged=(e)=>{
+        const { value } = e.target;
+        if (value && value !== "") {
+            let orderBalance = orderForm.orderBalance;
+            let net = orderBalance.total + orderBalance.tax - value - orderBalance.discount;
+            let stats = { ...orderBalance, net: net, prepayment: value };
+            onValueChanged("orderBalance", stats);
         }
     }
     const UpdateStats = () => {
         let orderList = orderForm.orderList;
-        let orderStats = orderForm.orderStats;
+        let orderBalance = orderForm.orderBalance;
         let total = 0, tax = 0, net = 0;
         for (let i = 0; i < orderList.length; i++) { total += orderList[i].totalPrice }
         tax = total * 0.18;
-        net = total + tax - orderStats.discount;
-        let stats = { total, net, tax, discount: orderStats.discount };
-        onValueChanged("orderStats", stats);
+        net = total + tax - orderBalance.discount- orderBalance.prepayment;
+        let stats = { total, net, tax, discount: orderBalance.discount, prepayment: orderBalance.prepayment };
+        onValueChanged("orderBalance", stats);
     }
     const AddProductList = (order) => {
         delete order["_id"];
@@ -106,9 +114,9 @@ const OrderModal = ({ handleClose }) => {
                 </Stepper>
                 {isLoading ? <LinearProgress /> :
                     <React.Fragment>
-                        {page == 0 && <OrderModalInfo discountChanged={discountChanged} orderStats={orderForm.orderStats} orderList={orderForm.orderList} addOrder={AddProductList} removeOrder={RemoveProductList} />}
+                        {page == 0 && <OrderModalInfo discountChanged={discountChanged} prepaymentChanged={prepaymentChanged} orderBalance={orderForm.orderBalance} orderList={orderForm.orderList} addOrder={AddProductList} removeOrder={RemoveProductList} />}
                         {page == 1 && <OrderModalCustomer onValueChanged={onValueChanged} />}
-                        {page == 2 && <OrderModalDetails order={orderForm} onValueChanged={onValueChanged} SaveOrder={SaveOrder} />}
+                        {page == 2 && <OrderModalDetails order={orderForm} onValueChanged={onValueChanged} SaveOrder={SaveOrder}/>}
                     </React.Fragment>
                 }
             </DialogContent>

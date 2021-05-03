@@ -43,7 +43,7 @@ const OrderProductList = ({ list, onRowDelete }) => {
 }
 
 const OrderInfo= (props) => {
-    const {addOrder, removeOrder, orderList, orderStats, discountChanged} = props;
+    const {addOrder, removeOrder, orderList, orderBalance, discountChanged, prepaymentChanged} = props;
     const SaveProduct = () => {
         if(selectedProduct._id===""){ Toast.warning("Ürün seçiniz"); return;}
         addOrder(selectedProduct);
@@ -93,10 +93,11 @@ const OrderInfo= (props) => {
           <Paper>
             <OrderProductList list={orderList} onRowDelete={RemoveProduct}/>
             <Grid container spacing={1} style={{ paddingLeft: 8, paddingRight: 8, backgroundColor:"lightgray" }}>
-              <Grid item xs={3}><CurrencyTextField label="Toplam" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderStats.total} disabled /></Grid>
-              <Grid item xs={3}><CurrencyTextField label="KDV %18" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderStats.tax} disabled /></Grid>
-              <Grid item xs={3}><CurrencyTextField label="İskonto" fullWidth currencySymbol="₺" onChange={discountChanged} outputFormat="string" decimalPlaces={2} value={orderStats.discount} /></Grid>
-              <Grid item xs={3}><CurrencyTextField label="Net" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderStats.net} disabled /></Grid>
+              <Grid item xs={2}><CurrencyTextField label="Toplam" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderBalance.total} disabled /></Grid>
+              <Grid item xs={2}><CurrencyTextField label="KDV %18" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderBalance.tax} disabled /></Grid>
+              <Grid item xs={3}><CurrencyTextField label="İskonto" fullWidth currencySymbol="₺" onChange={discountChanged} outputFormat="string" decimalPlaces={2} value={orderBalance.discount} /></Grid>
+              <Grid item xs={3}><CurrencyTextField label="Ön Ödeme" fullWidth currencySymbol="₺" onChange={prepaymentChanged} outputFormat="string" decimalPlaces={2} value={orderBalance.prepayment} /></Grid>
+              <Grid item xs={2}><CurrencyTextField label="Net" fullWidth currencySymbol="₺" outputFormat="string" decimalPlaces={2} value={orderBalance.net} disabled /></Grid>
             </Grid>
           </Paper>
         </Grid>

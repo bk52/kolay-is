@@ -1,42 +1,24 @@
 import React, { useMemo, useRef } from "react";
 import IconButton from "@material-ui/core/IconButton";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Table from "./SimpleTable";
 import CTable from "./SimpleCollapsibleTable";
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import EditIcon from "@material-ui/icons/Edit";
 import dateFormat from "../common/formatDate";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import {OrderStatus} from "../common/commonTypes";
 import Chip from "@material-ui/core/Chip";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 
 const OrderStatusCell = ({ value }) => {
   let res = null;
-  if (value == OrderStatus.ORDER_TAKEN) {
-    res = <Chip label="Sipariş Alındı" />;
-  } else if (value == OrderStatus.ORDER_PRINTING) {
-    res = <Chip color="primary" label="Baskıda" />;
-  } else if (value == OrderStatus.ORDER_COMPLETED) {
-    res = <Chip style={{ backgroundColor: "#28A745", color: "white" }} label="Hazır"/>
+  if (value == OrderStatus.ORDER_TAKEN.val) {
+    res = <Chip label={OrderStatus.ORDER_TAKEN.title} />;
+  } else if (value == OrderStatus.ORDER_PRINTING.val) {
+    res = <Chip color="primary" label={OrderStatus.ORDER_PRINTING.title} />;
+  } else if (value == OrderStatus.ORDER_COMPLETED.val){
+    res = <Chip style={{ backgroundColor: "#28A745", color: "white" }} label={OrderStatus.ORDER_COMPLETED.title}/>
   }
-  return res;
-};
-
-const OrderListCell = ({ value }) => {
-  let res = null;
-  if(value && value.length>0){
-    return <Paper><Grid container spacing={1} style={{ marginTop: 5, marginBottom: 5, paddingLeft: 5}}>
-      {
-          value.map(item=>{
-            return <React.Fragment>
-                <Grid item xs={6}>{item.productName}</Grid>
-                <Grid item xs={3}>{item.orderCount}</Grid>
-                <Grid item xs={3}>{item.productUnit}</Grid>
-            </React.Fragment>
-          })
-      }
-    </Grid></Paper>
+  else if (value == OrderStatus.ORDER_DELIVERED.val){
+    res = <Chip style={{ backgroundColor: "#28A745", color: "white" }} label={OrderStatus.ORDER_DELIVERED.title}/>
   }
   return res;
 };
@@ -65,7 +47,7 @@ const OrderTable = ({ filterText, tableData, onShowDetails }) => {
                 ShowDetails(props.value);
               }}
             >
-              <VisibilityIcon />
+              <EditIcon />
             </IconButton>
           );
         },
@@ -94,6 +76,19 @@ const OrderTable = ({ filterText, tableData, onShowDetails }) => {
           {title:"Birim", field:"productUnit"},
           {title:"Birim Fiyat", field:"unitPrice", type:"Decimal"},
           {title:"Toplam Fiyat", field:"totalPrice", type:"Decimal"},
+        ]
+      },
+      {
+        Header: "Toplam",
+        accessor: "orderBalance",
+        disableSortBy: true,
+        tableSum:true,
+        subTable:[
+          {title:"Toplam", field:"total", type:"Decimal"},
+          {title:"KDV %18", field:"tax", type:"Decimal"},
+          {title:"İskonto", field:"discount", type:"Decimal"},
+          {title:"Ön Ödeme", field:"prepayment", type:"Decimal"},
+          {title:"Genel Toplam", field:"net", type:"Decimal"},
         ]
       },
       {

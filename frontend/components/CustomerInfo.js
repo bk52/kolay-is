@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useImperativeHandle } from "react";
+import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -40,7 +40,8 @@ const GetTowns = (cityID) => {
     });
 };
 
-export default React.forwardRef((props, ref) => {
+
+export default forwardRef((props, ref) => {
   const classes = useStyles();
   const [formVal, setformVal] = useState({ cityID: 0, townID: 0, rate: 0 });
   const [isError, setisError] = useState(false);
@@ -65,26 +66,28 @@ export default React.forwardRef((props, ref) => {
       [name]: value,
     }));
   }
+
   useImperativeHandle(ref, () => ({
-    saveState() {
-      let _values = {
-        _id:formRef.current["_id"].value,
-        fullName: formRef.current["fullName"].value,
-        ownerName: formRef.current["ownerName"].value,
-        taxAdress: formRef.current["taxAdress"].value,
-        taxNo: formRef.current["taxNo"].value,
-        tel1: formRef.current["tel1"].value,
-        tel2: formRef.current["tel2"].value,
-        fax: formRef.current["fax"].value,
-        mail: formRef.current["mail"].value,
-        adress: formRef.current["adress"].value,
-        cityID: formRef.current["cityID"].value,
-        townID: formRef.current["townID"].value,
-        notes: formRef.current["notes"].value,
-        rate: formRef.current["rate"].value,
-      };
-      dispatch({ type: "Customer_SaveForm", formVal: _values });
-    },
+    // saveState() {
+    //   let _values = {
+    //     _id:formRef.current["_id"].value,
+    //     fullName: formRef.current["fullName"].value,
+    //     ownerName: formRef.current["ownerName"].value,
+    //     taxAdress: formRef.current["taxAdress"].value,
+    //     taxNo: formRef.current["taxNo"].value,
+    //     tel1: formRef.current["tel1"].value,
+    //     tel2: formRef.current["tel2"].value,
+    //     fax: formRef.current["fax"].value,
+    //     mail: formRef.current["mail"].value,
+    //     adress: formRef.current["adress"].value,
+    //     cityID: formRef.current["cityID"].value,
+    //     townID: formRef.current["townID"].value,
+    //     notes: formRef.current["notes"].value,
+    //     rate: formRef.current["rate"].value,
+    //   };
+    //   dispatch({ type: "Customer_SaveForm", formVal: _values });
+    // },
+
     saveForm() {
       let fullName = formRef.current["fullName"].value;
       if (fullName && fullName !== "") {
@@ -117,7 +120,7 @@ export default React.forwardRef((props, ref) => {
       } else {
         setisError(true);
       }
-    },
+    }
   }));
 
   return (

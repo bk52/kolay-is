@@ -29,6 +29,7 @@ export default function (state = initialState, action) {
     case types.CUSTOMER_PAYMENTS_API_ERROR: {
       Toast.error("Hata Oluştu");
       console.error("CUSTOMER_PAYMENTS_API_ERROR " + JSON.stringify(action.payload));
+      console.log(action);
       return Object.assign({}, state, {
         customerInfo: {},
         paymentInfo: {},

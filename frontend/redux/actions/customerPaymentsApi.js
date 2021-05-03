@@ -3,9 +3,12 @@ import {api, ErrorHandler} from "./apiRoot";
 
 function GetPayments(payload){
     let { customerId } = payload;
-    return api.get(url.PAYMENTS,{params:{customerId:customerId}})
-    .then((response) => response.data)
-    .catch((error) => {ErrorHandler(error);});
+    return new Promise((resolve,reject)=>{
+     api.get(url.PAYMENTS,{params:{customerId:customerId}})
+      .then((response) =>{resolve(response.data)})
+      .catch((error) => {ErrorHandler(error);reject(error);});
+    })
+
 }
 
 function GetPaymentDetails(paymentId){

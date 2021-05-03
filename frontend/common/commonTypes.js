@@ -1,7 +1,8 @@
 const OrderStatus={
-    "ORDER_TAKEN":0,
-    "ORDER_PRINTING":20,
-    "ORDER_COMPLETED":100
+    "ORDER_TAKEN":{title:"Sipariş Alındı", val:0},
+    "ORDER_PRINTING":{title:"Baskıda", val:20},
+    "ORDER_COMPLETED":{title:"Tamamlandı", val:40},
+    "ORDER_DELIVERED":{title:"Teslim Edildi", val:100},
 }
 
 

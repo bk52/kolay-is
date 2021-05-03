@@ -4,7 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import OrderTable from "../components/OrderTable";
 import NewOrderModal from "../components/OrderModal";
-import OrderDetailsModal from "../components/OrderDetailsModal";
+import OrderEditModal from "../components/OrderEditModal";
 import { GetOrders } from "../redux/actions/ordersApi";
 import Paper from "@material-ui/core/Paper"
 
@@ -27,7 +27,7 @@ const OrderPage = () => {
   const addNew = () => { setNewModal(true); };
   const onShowDetails = (_id) => { setDetails({ _id: _id, show: true }) };
   const closeNewModal = () => { fillTable(); setNewModal(false); };
-  const closeDetailsModal = () => { setDetails({ show: false, _id: "" }); }
+  const closeDetailsModal = () => {fillTable(); setDetails({ show: false, _id: "" }); }
   const textChanged = (e) => {
     const val = e.target.value || "";
     setfilterText(val);
@@ -48,11 +48,11 @@ const OrderPage = () => {
             ></NewOrderModal>
           ) : null}
           {details.show ? (
-            <OrderDetailsModal
+            <OrderEditModal
               open={true}
               orderId={details._id}
               handleClose={closeDetailsModal}
-            ></OrderDetailsModal>
+            ></OrderEditModal>
           ) : null}
         </React.Fragment>
       ) : (

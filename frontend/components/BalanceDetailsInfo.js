@@ -25,7 +25,6 @@ export default function BalanceDetailsInfo(){
     const classes = useStyles();
     const details = useSelector((state) => state.customerPayments);
     return(
-        <div className={classes.root}>
             <Grid container className={classes.root} spacing={2}>
                 <Grid item xs={12}>
                     <TextField disabled value={details.customerInfo.fullName} label="Firma Adı" fullWidth />
@@ -56,7 +55,6 @@ export default function BalanceDetailsInfo(){
                     <Rating
                         readOnly
                         className={classes.rate}
-                        labelId="label-rate"
                         id="rate"
                         name="rate"
                         value={details.customerInfo.rate}
@@ -64,6 +62,5 @@ export default function BalanceDetailsInfo(){
                 </FormControl>
                 </Grid>
             </Grid>
-        </div>
     )
 }

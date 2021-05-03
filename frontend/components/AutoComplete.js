@@ -71,7 +71,7 @@ export default function AutoBox({selectedChanged}) {
       renderOption={(option) => (
         <React.Fragment>
              <Grid container spacing={1}>
-               <Grid container xs={12}><Typography>{option.fullName}</Typography></Grid>
+               <Grid item xs={12}><Typography>{option.fullName}</Typography></Grid>
                 <Grid container>
                   <Grid item xs={12} md={8}><Typography color="textSecondary" style={{fontSize:"12px"}}>{option.ownerName}</Typography></Grid>
                   <Grid item xs={12} md={4} style={{textAlign:"right"}}><Rating name="read-only" value={option.rate} readOnly /></Grid>

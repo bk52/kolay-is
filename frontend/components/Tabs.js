@@ -1,4 +1,4 @@
-import React, { useState, useRef, useImperativeHandle } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,9 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 
 
-function TabPanel(props) {
+const TabPanel=(props)=> {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -34,7 +33,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-function a11yProps(index) {
+const a11yProps=(index)=> {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
@@ -59,30 +58,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default React.forwardRef((props, ref) => {
-  const childRef = useRef();
+const TabsComponent = (props) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const tabItems = [];
   const tabPanels = [];
  
-  useImperativeHandle(
-    ref,
-    () => ({
-      saveCustomerForm() {
-         if(childRef.current.saveForm){
-          childRef.current.saveForm();
-         }
-      },
-    }),
-  )
-
   props.tabList.map((item) => {
     tabItems.push(
-      <Tab
+      <Tab key={item.index}
         classes={{
           wrapper: classes.iconLabelWrapper,
-          labelContainer: classes.labelContainer,
+          //labelContainer: classes.labelContainer,
           labelIcon:classes.labelIcon
         }}
         label={<span style={{paddingLeft:"8px"}}>{item.title}</span>}
@@ -90,27 +77,16 @@ export default React.forwardRef((props, ref) => {
         {...a11yProps(item.index)}
       />
     );
-    if (item.index == 0) {
-      item.component.ref = childRef;
-    }
     tabPanels.push(
-      <TabPanel value={value} index={item.index}>
+      <TabPanel key={item.index} value={value} index={item.index}>
         {item.component}
       </TabPanel>
     );
   });
 
   const handleChange = (event, newValue) => {
-    if (value == 0 && newValue != 0) {
-      if(childRef.current && childRef.current.saveState){
-        childRef.current.saveState();
-      }
-     } 
+    // if (value == 0 && newValue != 0) {} 
     setValue(newValue);
-     if(newValue==0)
-        props.isFirstTab(true)
-    else
-      props.isFirstTab(false)
   };
 
   return (
@@ -124,4 +100,5 @@ export default React.forwardRef((props, ref) => {
     </div>
   );
 }
-)
+
+export default TabsComponent;

@@ -12,12 +12,13 @@ const orderList=new Schema(
     }
 )
 
-const orderStats=new Schema(
+const orderBalance=new Schema(
     {
-        net:Number, 
-        tax:Number, 
-        total:Number, 
-        discount:Number
+        net:mongoose.Decimal128,
+        tax:mongoose.Decimal128,
+        total:mongoose.Decimal128,
+        discount:mongoose.Decimal128,
+        prepayment:mongoose.Decimal128,
     }
 )
 
@@ -26,9 +27,8 @@ const orderSchema = new Schema(
     userCompanyId: String,
     customerId:String,
     orderList:[orderList],
-    orderStats:orderStats,
+    orderBalance:orderBalance,
     note:String,
-    prePayment:mongoose.Decimal128,
     orderStatus:{ type: Number, default: 0 },
     deliveryDate:Date,
     urgent: { type: Boolean, default: false },
@@ -58,7 +58,6 @@ orderSchema.statics.getOrders=function(userCompanyId){
             userCompanyId:0,
             updatedDate:0,
             note:0,
-            orderStats:0,
         }
     )
     .populate([

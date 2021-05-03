@@ -133,7 +133,7 @@ function PaymentHistory({ list, onSubpaymentDelete, isClosed }) {
           </ListSubheader>
         }
       >
-        {list.map((item) => {
+        {list.map((item,index) => {
           let _dt = formatDate(item.createdDate);
           return (
             <ListItem button>

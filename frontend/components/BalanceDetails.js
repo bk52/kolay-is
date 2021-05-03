@@ -6,7 +6,7 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import Fab from "@material-ui/core/Fab";
 import Tabs from "./Tabs";
 import Paper from "@material-ui/core/Paper";
-import {types} from "../redux/constants/action-types";
+import { types } from "../redux/constants/action-types";
 
 import { makeStyles } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -16,27 +16,6 @@ import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import DetailsInfo from "./BalanceDetailsInfo";
 import BalanceHistory from "./BalanceHistory";
 import LinearProgress from "@material-ui/core/LinearProgress";
-
-const tabList = [
-  {
-    index: 0,
-    title: "GENEL BİLGİLER",
-    icon: <AccountBoxIcon />,
-    component: <DetailsInfo/>,
-  },
-  {
-    index: 1,
-    title: "TAHSİLATLAR",
-    icon: <ArrowDownwardIcon />,
-    component: <BalanceHistory type={1} onRefresh={null}/>,
-  },
-  {
-    index: 2,
-    title: "BORÇLAR",
-    icon: <ArrowUpwardIcon />,
-    component: <BalanceHistory type={2} onRefresh={null}/>,
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,11 +28,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function BalanceDetails(props) {
+const BalanceDetails = (props) => {
   const dispatch = useDispatch();
   const customerPaymentsState = useSelector((state) => state.customerPayments);
   const classes = useStyles();
-  const isFirstTab = (val) => {};
+  const isFirstTab = (val) => { };
 
   const Refresh=()=>{
     dispatch({
@@ -62,14 +41,33 @@ export default function BalanceDetails(props) {
     });
   }
 
+  const tabList = [
+    {
+      index: 0,
+      title: "GENEL BİLGİLER",
+      icon: <AccountBoxIcon />,
+      component: <DetailsInfo />,
+    },
+    {
+      index: 1,
+      title: "TAHSİLATLAR",
+      icon: <ArrowDownwardIcon />,
+      component: <BalanceHistory type={1} onRefresh={Refresh} />,
+    },
+    {
+      index: 2,
+      title: "BORÇLAR",
+      icon: <ArrowUpwardIcon />,
+      component: <BalanceHistory type={2} onRefresh={Refresh} />,
+    },
+  ];
+
   useEffect(() => {
-    tabList[1].component.props.onRefresh=Refresh;
-    tabList[2].component.props.onRefresh=Refresh;
     Refresh();
   }, []);
-  
+
   return (
-    <div>
+    <React.Fragment>
       <Grid container spacing={1}>
         <Grid style={{ padding: "0px", paddingBottom: "4px" }} item xs={12}>
           <Paper className={classes.header} style={{ padding: "8px" }}>
@@ -98,7 +96,7 @@ export default function BalanceDetails(props) {
           </Paper>
         </Grid>
 
-        <Grid container xs={12}>
+        <Grid item xs={12}>
           {customerPaymentsState.isLoading ? (
             <LinearProgress />
           ) : (
@@ -106,6 +104,8 @@ export default function BalanceDetails(props) {
           )}
         </Grid>
       </Grid>
-    </div>
+    </React.Fragment>
   );
 }
+
+export default BalanceDetails;

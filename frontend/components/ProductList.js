@@ -4,45 +4,34 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Grid from "@material-ui/core/Grid";
-import {FindCustomers} from "../redux/actions/customersApi";
+import {GetProducts} from "../redux/actions/productsApi";
 
 let prevSearchText = "";
-
-const TestOptions=[
-  {_id:"1", productName:"Kaşe", productUnit:"Adet",unitPrice:40},
-  {_id:"2", productName:"Fatura", productUnit:"Cilt",unitPrice:80},
-]
 
 export default function AutoBox({selectedChanged}) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState([]);
-    const [optionText, setoptionText]= React.useState("En az 3 harf girin")
+    const [optionText, setoptionText]= React.useState("Ürünlerde Ara")
 
-    useEffect(() => {prevSearchText = "";}, []);
+    useEffect(() => {
+      prevSearchText = "";
+      GetProducts()
+      .then((data)=>{if(data && data.result){setOptions(data.result)}})
+      .catch((error)=>{console.log(error); setoptionText("API Error")})
+    }, []);
 
     function SearchItem(e) {
         let searchText = e.target.value;
-        if (searchText.length > 2) {
+        if (searchText.length > 0) {
             if (prevSearchText !== "" && searchText.includes(prevSearchText)) {} 
             else {
               prevSearchText = searchText;
               setLoading(true);
-
-              setOptions(TestOptions); setLoading(false);
-              // FindCustomers(searchText)
-              // .then((response)=>{
-              //   if(response.data && response.data.result)
-              //     setOptions(response.data.result);
-              //   setLoading(false);
-              // })
-              // .catch((err)=>{
-              //     setoptionText("API Error");
-              //     setLoading(false);
-              // })
+              setOptions(options); setLoading(false);
             }      
         }
         else if(searchText==""){
-            setoptionText("En az 3 harf girin")
+            setoptionText("Ürünlerde Ara")
             setOptions([])
         }
       }
