@@ -1,6 +1,6 @@
 //const baseURL="http://localhost:9600"
 export const url = {
-  baseURL: "https://kolayis.herokuapp.com/",
+  baseURL: "https://kolayis.herokuapp.com/api",
   AUTH: "/auth",
   CUSTOMERS: "/customers",
   TOKEN: "/token",
